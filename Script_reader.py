@@ -11,28 +11,33 @@ def document_reader(file):
     text = text.splitlines()
     return text
 
-def important_text_compiler(list_of_strings, string):
-    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
-    for category in inside_or_out_or_both:
-        if category == string:
-            next_string = list_of_strings.index(string)+1
-            new_string = string+" "+list_of_strings[next_string]
-            return [new_string, 'Replaced', next_string]
-    return [string, 'Same']
-
-def document_reader(script):
-    script = file_reader(script)
-    compiled_document = []
-    for line in script:
-        line = important_text_compiler(script, line)
-        if line[1] == 'Replaced':
-            del script[line[2]]
-            del script[line[2]+1]
-        line = line[0]
-        compiled_document.append(line)
-    return compiled_document
-
-print document_reader('Sherlock-A-Study-in-Pink-final-shooting-script.pdf')
+def scene_numberer(script_as_list, index):
+    script_length = len(script_as_list)
+    if (index-2) > 0:
+        if (index+2) < script_length:
+            if script_as_list[index-2] == script_as_list[index+2]:
+                return script_as_list[index+2]
+            elif (index+1) == '':
+                scene_number = index+2
+                for strings in script_as_list[index-10:index]:
+                    there_or_not = strings.find(scene_number)
+                    if there_or_not != -1:
+                        return scene_number
+            elif (index-1) == '':
+                scene_number = index-2
+                for strings in script_as_list[index:index+10]:
+                    there_or_not = strings.find(scene_number)
+                    if there_or_not != -1:
+                        return scene_number
+            else:
+                for strings in script_as_list[index-10:index+10]:
+                    if len(strings) <= 3:
+                        if len (strings) > 0:
+                            if not '.' in strings:
+                                there_or_not= strings.find(strings)
+                                if there_or_not != -1:
+                                    return strings
+                return ''
 
 def text_splitter (important_text):
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
@@ -65,36 +70,6 @@ if the location is inside or outside, the location details and what time of day 
                 time_of_day = 'NA'
                 return [inside_or_out, location_type, time_of_day]
 
-def scene_searcher(a_list):
-    for something in a_list:
-        where_is_something = a_list.index(something)
-        if where_is_something+1 == '' or where_is_something-1 == '':
-            return something
-
-def scene_numberer(script_as_list, index):
-    script_length = len(script_as_list)
-    if (index-2) > 0:
-        if (index+2) < script_length:
-            if script_as_list[index-2] == script_as_list[index+2]:
-                return script_as_list[index+2]
-            elif (index+1) == '':
-                scene_number = index+2
-                for strings in script_as_list[index-10:index]:
-                    there_or_not = strings.find(scene_number)
-                    if there_or_not != -1:
-                        return scene_number
-            elif (index-1) == '':
-                scene_number = index-2
-                for strings in script_as_list[index:index+10]:
-                    there_or_not = strings.find(scene_number)
-                    if there_or_not != -1:
-                        return scene_number
-            else:
-                for strings in script_as_list[index-10:index+10]:
-                    if strings =
-                print str(index) + '!'
-                return ''
-
 def heading_decider(output_type):
     '''Depending on what type of output has been selected by the user this function creates the headings in the correct format'''
     if output_type == 'CSV':
@@ -126,7 +101,7 @@ def table_creator(script):
         index += 1
     return str(table)
 
-#print (table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+print (table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
 
 def file_namer(file):
     '''Names the file as a CSV document with a useful description'''
