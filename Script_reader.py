@@ -5,13 +5,30 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from prettytable import PrettyTable
 
+def main():
+   print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+   print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
+   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   print(table_creator('Brooklyn-Shooting-Script.pdf'))
+   pass
+
 def document_reader(file):
     '''Uses textract to read and return the text of files, split them into different lines and make them uppercase'''
     text = textract.process(file)
     text = text.splitlines()
     return text
 
+#something = document_reader('Sherlock-A-Study-in-Pink-final-shooting-script.pdf')
+
+#print (something[365:385])
+#print (something[2932:2952])
+#print (something[2973:2987])
+#print (something[3520:3535])
+#print (something[4165:4185])
+
 def scene_numberer(script_as_list, index):
+    '''Searches the area surrounding the key text to see if there are places where scene numbers that might be\
+it then checks to see if they are anywhere else and returns those numbers if they are'''
     script_length = len(script_as_list)
     if (index-2) > 0:
         if (index+2) < script_length:
@@ -55,7 +72,7 @@ if the location is inside or outside, the location details and what time of day 
                     location_type = important_text[end_of_inside_or_out+1:start_of_time_of_day-2]
                     time_of_day = important_text[start_of_time_of_day:]
                     return [inside_or_out, location_type, time_of_day]
-            if important_text.find('-') != -1:
+            if important_text.find('- ') != -1:
                 hyphen_number = important_text.rfind('-')
                 location_type = important_text[end_of_inside_or_out+1:hyphen_number-1]
                 time_of_day = important_text[hyphen_number+2:]
@@ -84,6 +101,15 @@ def line_generator(list, output_type):
     else:
         return list
 
+def important_text_compiler(list_of_strings, string, index):
+    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
+    for category in inside_or_out_or_both:
+        if category == string:
+            next_string = index+2
+            new_string = string + " " + list_of_strings[next_string]
+            return new_string
+    return string
+
 def table_creator(script):
     '''This function takes the script as an input and uses the formatted_lines function to add all the locations together and\
  turns it in into a table.'''
@@ -93,15 +119,16 @@ def table_creator(script):
     for lines in script:
         formatted_lines = text_splitter(lines)
         if formatted_lines != None:
-            scene_number = scene_numberer(script, index)
             if formatted_lines[1]=='':
-                print index
+                compiled_line = important_text_compiler(script, lines, index )
+                formatted_lines = text_splitter(compiled_line)
+            scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
             table.add_row(line_generator(formatted_lines, 'text'))
         index += 1
     return str(table)
 
-print (table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+#print (table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
 
 def file_namer(file):
     '''Names the file as a CSV document with a useful description'''
@@ -179,5 +206,5 @@ determine the output type of the file.'''
 
 #option_selector()
 
-#if __name__ == '__main__':
-#    main()
+if __name__ == '__main__':
+    main()
