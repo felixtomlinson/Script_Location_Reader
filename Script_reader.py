@@ -126,7 +126,7 @@ def table_creator(script):
         index += 1
     return str(table)
 
-print (table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+#print (table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
 
 def file_namer(file):
     '''Names the file as a CSV document with a useful description'''
