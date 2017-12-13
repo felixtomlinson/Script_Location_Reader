@@ -5,73 +5,30 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from prettytable import PrettyTable
 
+def main():
+   print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+   print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
+   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   print(table_creator('Brooklyn-Shooting-Script.pdf'))
+   pass
+
 def document_reader(file):
     '''Uses textract to read and return the text of files, split them into different lines and make them uppercase'''
     text = textract.process(file)
     text = text.splitlines()
     return text
 
-def important_text_compiler(list_of_strings, string):
-    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
-    for category in inside_or_out_or_both:
-        if category == string:
-            next_string = list_of_strings.index(string)+1
-            new_string = string+" "+list_of_strings[next_string]
-            return [new_string, 'Replaced', next_string]
-    return [string, 'Same']
+#something = document_reader('Sherlock-A-Study-in-Pink-final-shooting-script.pdf')
 
-def document_reader(script):
-    script = file_reader(script)
-    compiled_document = []
-    for line in script:
-        line = important_text_compiler(script, line)
-        if line[1] == 'Replaced':
-            del script[line[2]]
-            del script[line[2]+1]
-        line = line[0]
-        compiled_document.append(line)
-    return compiled_document
-
-print document_reader('Sherlock-A-Study-in-Pink-final-shooting-script.pdf')
-
-def text_splitter (important_text):
-    '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
-if the location is inside or outside, the location details and what time of day the actions is happening at'''
-    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
-    for category in inside_or_out_or_both:
-        start_of_inside_or_out = important_text.find(category)
-        if start_of_inside_or_out != -1:
-            end_of_inside_or_out = start_of_inside_or_out + len(category)
-            inside_or_out = important_text[start_of_inside_or_out:end_of_inside_or_out]
-            times_in_the_day = ['DAY', 'NIGHT', 'EVENING']
-            for times in times_in_the_day:
-                start_of_time_of_day = important_text.find(times)
-                if start_of_time_of_day != -1:
-                    location_type = important_text[end_of_inside_or_out+1:start_of_time_of_day-2]
-                    time_of_day = important_text[start_of_time_of_day:]
-                    return [inside_or_out, location_type, time_of_day]
-            if important_text.find('-') != -1:
-                hyphen_number = important_text.rfind('-')
-                location_type = important_text[end_of_inside_or_out+1:hyphen_number-1]
-                time_of_day = important_text[hyphen_number+2:]
-                return [inside_or_out, location_type, time_of_day]
-            if important_text.rfind('.') > len(category):
-                stop_number = important_text.rfind('.')
-                location_type = important_text[end_of_inside_or_out+1:stop_number]
-                time_of_day = important_text[stop_number+2:]
-                return [inside_or_out, location_type, time_of_day]
-            else:
-                location_type = important_text[end_of_inside_or_out+1:]
-                time_of_day = 'NA'
-                return [inside_or_out, location_type, time_of_day]
-
-def scene_searcher(a_list):
-    for something in a_list:
-        where_is_something = a_list.index(something)
-        if where_is_something+1 == '' or where_is_something-1 == '':
-            return something
+#print (something[365:385])
+#print (something[2932:2952])
+#print (something[2973:2987])
+#print (something[3520:3535])
+#print (something[4165:4185])
 
 def scene_numberer(script_as_list, index):
+    '''Searches the area surrounding the key text to see if there are places where scene numbers that might be\
+it then checks to see if they are anywhere else and returns those numbers if they are'''
     script_length = len(script_as_list)
     if (index-2) > 0:
         if (index+2) < script_length:
@@ -91,9 +48,44 @@ def scene_numberer(script_as_list, index):
                         return scene_number
             else:
                 for strings in script_as_list[index-10:index+10]:
-                    if strings =
-                print str(index) + '!'
+                    if len(strings) <= 3:
+                        if len (strings) > 0:
+                            if not '.' in strings:
+                                there_or_not= strings.find(strings)
+                                if there_or_not != -1:
+                                    return strings
                 return ''
+
+def text_splitter (important_text):
+    '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
+if the location is inside or outside, the location details and what time of day the actions is happening at'''
+    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
+    for category in inside_or_out_or_both:
+        start_of_inside_or_out = important_text.find(category)
+        if start_of_inside_or_out != -1:
+            end_of_inside_or_out = start_of_inside_or_out + len(category)
+            inside_or_out = important_text[start_of_inside_or_out:end_of_inside_or_out]
+            times_in_the_day = ['DAY', 'NIGHT', 'EVENING']
+            for times in times_in_the_day:
+                start_of_time_of_day = important_text.find(times)
+                if start_of_time_of_day != -1:
+                    location_type = important_text[end_of_inside_or_out+1:start_of_time_of_day-2]
+                    time_of_day = important_text[start_of_time_of_day:]
+                    return [inside_or_out, location_type, time_of_day]
+            if important_text.find('- ') != -1:
+                hyphen_number = important_text.rfind('-')
+                location_type = important_text[end_of_inside_or_out+1:hyphen_number-1]
+                time_of_day = important_text[hyphen_number+2:]
+                return [inside_or_out, location_type, time_of_day]
+            if important_text.rfind('.') > len(category):
+                stop_number = important_text.rfind('.')
+                location_type = important_text[end_of_inside_or_out+1:stop_number]
+                time_of_day = important_text[stop_number+2:]
+                return [inside_or_out, location_type, time_of_day]
+            else:
+                location_type = important_text[end_of_inside_or_out+1:]
+                time_of_day = 'NA'
+                return [inside_or_out, location_type, time_of_day]
 
 def heading_decider(output_type):
     '''Depending on what type of output has been selected by the user this function creates the headings in the correct format'''
@@ -109,6 +101,15 @@ def line_generator(list, output_type):
     else:
         return list
 
+def important_text_compiler(list_of_strings, string, index):
+    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
+    for category in inside_or_out_or_both:
+        if category == string:
+            next_string = index+2
+            new_string = string + " " + list_of_strings[next_string]
+            return new_string
+    return string
+
 def table_creator(script):
     '''This function takes the script as an input and uses the formatted_lines function to add all the locations together and\
  turns it in into a table.'''
@@ -118,9 +119,10 @@ def table_creator(script):
     for lines in script:
         formatted_lines = text_splitter(lines)
         if formatted_lines != None:
-            scene_number = scene_numberer(script, index)
             if formatted_lines[1]=='':
-                print index
+                compiled_line = important_text_compiler(script, lines, index )
+                formatted_lines = text_splitter(compiled_line)
+            scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
             table.add_row(line_generator(formatted_lines, 'text'))
         index += 1
@@ -204,5 +206,5 @@ determine the output type of the file.'''
 
 #option_selector()
 
-#if __name__ == '__main__':
-#    main()
+if __name__ == '__main__':
+    main()
