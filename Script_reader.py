@@ -6,11 +6,12 @@ from email.mime.text import MIMEText
 from prettytable import PrettyTable
 
 def main():
+    print("I'm alive!")
    #  print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
-   print(table_creator('/home/jonathan/projects/Script_Location_Reader/A-Long-Way-Down-Shooting-Script.pdf'))
+    print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
    #  print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
    #  print(table_creator('Brooklyn-Shooting-Script.pdf'))
-   pass
+    pass
 
 def document_reader(file):
     '''Uses textract to read and return the text of files, split them into different lines and return the whole thing

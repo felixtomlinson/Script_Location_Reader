@@ -114,3 +114,5 @@ venv.bak/
 
 
 *.pdf
+
+requirements_no_venv\.txt
