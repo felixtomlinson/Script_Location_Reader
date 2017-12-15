@@ -1,13 +1,13 @@
 All of these scrips are from the BBC's Script Library: http://www.bbc.co.uk/writersroom/scripts
 
 A Long Way Down - http://downloads.bbc.co.uk/writersroom/scripts/A-Long-Way-Down-Shooting-Script.pdf
-(Lots of scene number errors)
+(Some scene number errors)
 
 Brooklyn - http://downloads.bbc.co.uk/writersroom/scripts/Brooklyn-Shooting-Script.pdf
 (Everything good)
 
 Peaky Blinders Series 1 Episode 1 - http://downloads.bbc.co.uk/writersroom/scripts/Peaky-Blinders-S1-Ep1.pdf
-(Lots of missing and incorrect scene numbers and some time of day errors)
+(Everything good)
 
 Sherlock A Study in Pink - http://downloads.bbc.co.uk/writersroom/scripts/Sherlock-A-Study-in-Pink-final-shooting-script.pdf
-(Some location type errors)
+(Everything good)
