@@ -6,25 +6,19 @@ from email.mime.text import MIMEText
 from prettytable import PrettyTable
 
 def main():
-   print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
-   print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
-   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
-   print(table_creator('Brooklyn-Shooting-Script.pdf'))
-   pass
+    print("I'm alive!")
+   #  print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+    print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
+   #  print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   #  print(table_creator('Brooklyn-Shooting-Script.pdf'))
+    pass
 
 def document_reader(file):
-    '''Uses textract to read and return the text of files, split them into different lines and make them uppercase'''
-    text = textract.process(file)
+    '''Uses textract to read and return the text of files, split them into different lines and return the whole thing
+    as a list object'''
+    text = textract.process(file).decode('utf-8')
     text = text.splitlines()
     return text
-
-#something = document_reader('Sherlock-A-Study-in-Pink-final-shooting-script.pdf')
-
-#print (something[365:385])
-#print (something[2932:2952])
-#print (something[2973:2987])
-#print (something[3520:3535])
-#print (something[4165:4185])
 
 def scene_numberer(script_as_list, index):
     '''Searches the area surrounding the key text to see if there are places where scene numbers that might be\
@@ -47,16 +41,29 @@ it then checks to see if they are anywhere else and returns those numbers if the
                     if there_or_not != -1:
                         return scene_number
             else:
+                short_strings_within5 = []
+                short_strings_within10 = []
+                for strings in script_as_list[index-5:index+5]:
+                    if len(strings) <= 3:
+                        if len (strings) > 0:
+                            if not '.' in strings:
+                                short_strings_within5.append(strings)
+                for short_strings in short_strings_within5:
+                    number_of_occurences = script_as_list[index-5:index+5].count(short_strings)
+                    if number_of_occurences == 2:
+                        return short_strings
                 for strings in script_as_list[index-10:index+10]:
                     if len(strings) <= 3:
                         if len (strings) > 0:
                             if not '.' in strings:
-                                there_or_not= strings.find(strings)
-                                if there_or_not != -1:
-                                    return strings
-                return ''
+                                short_strings_within10.append(strings)
+                for short_strings in short_strings_within10:
+                    number_of_occurences = script_as_list[index-10:index+10].count(short_strings)
+                    if number_of_occurences == 2:
+                        return short_strings
+    return ''
 
-def text_splitter (important_text):
+def text_splitter(important_text):
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
 if the location is inside or outside, the location details and what time of day the actions is happening at'''
     inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
@@ -127,8 +134,6 @@ def table_creator(script):
             table.add_row(line_generator(formatted_lines, 'text'))
         index += 1
     return str(table)
-
-#print (table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
 
 def file_namer(file):
     '''Names the file as a CSV document with a useful description'''
