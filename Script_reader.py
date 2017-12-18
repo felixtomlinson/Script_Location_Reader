@@ -67,7 +67,7 @@ def text_splitter(important_text):
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
 if the location is inside or outside, the location details and what time of day the actions is happening at'''
     inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
-    for category in inside_or_out_or_both:
+    for category in inside_or_out_or_both:  # this is the same as lines 76, 77. Could make a function and call twice
         start_of_inside_or_out = important_text.find(category)
         if start_of_inside_or_out != -1:
             end_of_inside_or_out = start_of_inside_or_out + len(category)
