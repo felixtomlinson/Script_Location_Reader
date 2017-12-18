@@ -7,9 +7,9 @@ from prettytable import PrettyTable
 
 def main():
    print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
-   print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
-   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
-   print(table_creator('Brooklyn-Shooting-Script.pdf'))
+   # print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
+   # print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   # print(table_creator('Brooklyn-Shooting-Script.pdf'))
    pass
 
 def document_reader(file):
@@ -57,6 +57,9 @@ def heading_decider(output_type):
         return (['Scene Number','Internal or external','Type of Location','Time of Day'])
 
 def important_text_compiler(list_of_strings, string, index):
+    '''If the important text is split up by split lines due to how the PDF is formatted\
+this function recompiles it into a single string so that it can be read and the text split\
+into useful categories'''
     inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
     for category in inside_or_out_or_both:
         if category == string:
@@ -66,6 +69,8 @@ def important_text_compiler(list_of_strings, string, index):
     return string
 
 def rough_scene_checker(script_as_list, index, which_side):
+    '''Checks to see if there are any short strings in close proximity to the important text'''
+    #Needs to be improved to strip out non-numbers
     if len(script_as_list[index + 2 * which_side]) <= 5:
         if len (script_as_list[index + 2 * which_side]) > 0:
             if not '.' in script_as_list[index + 2 * which_side]:
@@ -73,40 +78,72 @@ def rough_scene_checker(script_as_list, index, which_side):
                 return scene_number
 
 def potential_scene_number_compiler(script_as_list):
+    '''Returns a list of strings which are shorter than 6 characters'''
+    #Needs to be improved to strip out non-numbers
     potential_strings_within_range = []
     for strings in script_as_list:
         if len(strings) <= 5:
             if len (strings) > 0:
-                if not '.' in strings:
-                    potential_strings_within_range.append(strings)
+                potential_strings_within_range.append(strings)
     return potential_strings_within_range
 
-def scene_number_finder(script_as_list):
+def scene_number_one_on_each_side(script_as_list):
+    '''Finds potential scene numbers in the text, split by lines, before and the text after the important text.\
+It returns a number if it appears both before and after the text.'''
     upper_range_number = potential_scene_number_compiler(script_as_list[1])
     lower_range_number = potential_scene_number_compiler(script_as_list[0])
     if bool(set(upper_range_number) & set(lower_range_number)):
+        #Simplify this to remove for loops. Just printing the set will return the right number nearly all the time
         for numbers in upper_range_number:
             upper_number = numbers
             for scene_numbers in lower_range_number:
                 if scene_numbers == upper_number:
                     return scene_numbers
 
-def scene_number_finder_extreme(script_as_list):
-    upper_range_number = potential_scene_number_compiler(script_as_list[1])
-    lower_range_number = potential_scene_number_compiler(script_as_list[0])
-    searchable_script_as_list = []
-    for string in script_as_list[0]:
-        string = string.split()
-        searchable_script_as_list.extend(string)
-    for string in script_as_list[1]:
-        string = string.split()
-        searchable_script_as_list.extend(string)
-    for short_strings in upper_range_number:
-        number_of_occurences = searchable_script_as_list.count(short_strings)
+def scene_number_two_anywhere(script_as_list):
+    potential_number = potential_scene_number_compiler(script_as_list)
+    for number in potential_number:
+        number_of_occurences = potential_number.count(number)
         if number_of_occurences == 2:
-            return short_strings
+            return number
 
-def script_trimmer(script_as_list, script_length, index, search_range):
+def list_splitter(list_inputted):
+    '''Splits a list of strings into a list of strings split by spaces'''
+    list_of_long_strings = []
+    for string in list_inputted:
+        string = string.split()
+        list_of_long_strings.extend(string)
+    return list_of_long_strings
+
+def scene_number_two_anywhere_with_split_lists(script_as_list):
+    potential_number = potential_scene_number_compiler(script_as_list)
+    script_as_list = list_splitter(script_as_list)
+    for number in potential_number:
+        number_of_occurences = script_as_list.count(number)
+        if number_of_occurences == 2:
+            return number
+
+# def scene_number_finder_extreme(script_as_list):
+#     upper_range_number = potential_scene_number_compiler(script_as_list[1])
+#     print upper_range_number
+#     lower_range_number = potential_scene_number_compiler(script_as_list[0])
+#     print lower_range_number
+#     upper_searchable_script_as_list = list_splitter(script_as_list[1])
+#     lower_searchable_script_as_list = list_splitter(script_as_list[0])
+#     for numbers in upper_range_number:
+#         number_of_occurences = lower_searchable_script_as_list.count(numbers)
+#         if number_of_occurences == 1:
+#             print 'Uses scene_number_finder_extreme lower '+str(numbers)
+#             return numbers
+#     for numbers in lower_range_number:
+#         number_of_occurences = upper_searchable_script_as_list.count(numbers)
+#         if number_of_occurences == 1:
+#             print 'Uses scene_number_finder_extreme upper '+str(numbers)
+#             return numbersscene_number = scene_number_two_anywhere(trimmed_script)
+
+def script_trimmer(script_as_list, script_length, index, search_range, search_type):
+    '''Returns a list of the strings around the string that contain important information\
+the length of the list can be determined by inputting a search range'''
     lower_index = index - search_range
     upper_index = index + search_range
     if lower_index < 0:
@@ -115,22 +152,22 @@ def script_trimmer(script_as_list, script_length, index, search_range):
         upper_index = script_length
     lower_half = script_as_list[lower_index:index]
     upper_half = script_as_list[index:upper_index]
-    return [lower_half, upper_half]
+    both_halves = script_as_list[lower_index:upper_index]
+    if search_type == 'one_on_each_side':
+        return [lower_half, upper_half]
+    else:
+        return both_halves
 
-def for_looper(script_as_list, script_length, index, start, end):
+def best_guesser(script_as_list, script_length, index, start, end, search_type):
     for number in range(start, end):
-        trimmed_script = script_trimmer(script_as_list, script_length, index, number)
-        scene_number = scene_number_finder(trimmed_script)
+        trimmed_script = script_trimmer(script_as_list, script_length, index, number, search_type)
+        if search_type == 'one_on_each_side':
+            scene_number = scene_number_one_on_each_side(trimmed_script)
+        elif search_type == 'two_anywhere':
+            scene_number = scene_number_two_anywhere(trimmed_script)
+        elif search_type == 'split_script':
+            scene_number = scene_number_two_anywhere_with_split_lists(trimmed_script)
         if scene_number != None:
-            #print (scene_number + ' - Needed to search as far as: '+str(number)+'! Range = ' + str(start) + ',' + str(end))
-            return scene_number
-
-def extreme_for_looper(script_as_list, script_length, index, start, end):
-    for number in range(start, end):
-        trimmed_script = script_trimmer(script_as_list, script_length, index, number)
-        scene_number = scene_number_finder_extreme(trimmed_script)
-        if scene_number != None:
-            #print (scene_number + ' - Needed an extreme search as far as: '+str(number)+'! Range = ' + str(start) + ',' + str(end))
             return scene_number
 
 def scene_numberer(script_as_list, index):
@@ -145,10 +182,14 @@ it then checks to see if they are anywhere else and returns those numbers if the
     uppers = [8, 12, 16]
     combined = zip(lowers,uppers)
     for i, j in combined:
-        scene_number = for_looper(script_as_list, script_length, index, i, j)
+        scene_number = best_guesser(script_as_list, script_length, index, i, j, 'one_on_each_side')
         if scene_number != None:
             return scene_number
-        scene_number = extreme_for_looper(script_as_list, script_length, index, i, j)
+        scene_number = best_guesser(script_as_list, script_length, index, i, j, 'two_anywhere')
+        if scene_number != None:
+            return scene_number
+    for i, j in combined:
+        scene_number = best_guesser(script_as_list, script_length, index, i, j, 'split_script')
         if scene_number != None:
             return scene_number
     if (script_as_list[index+1]) == '' or (script_as_list[index-1]) == '':
@@ -156,12 +197,11 @@ it then checks to see if they are anywhere else and returns those numbers if the
         if scene_number == None:
             scene_number = rough_scene_checker(script_as_list, index, -1)
         if scene_number != None:
-            #print (scene_number + ' - Used the rough scene checker!')
             return scene_number
-    #print ('Try again', index, trimmed_script)
+    print script_as_list[index-10:index+10]
     return ''
 
-def line_generator(list, output_type, index_list):
+def line_generator(list, output_type):
     '''Turns a list with three objects in it either into CSV or a table depending on the ouput type selected'''
     if output_type == 'CSV':
         return list[0] + ',' + list[1] + ',' + list[2] + ',' + list[3] + '\n'
@@ -174,7 +214,6 @@ def table_creator(script):
     script = document_reader(script)
     table = PrettyTable(heading_decider('text'))
     index = 0
-
     for lines in script:
         formatted_lines = text_splitter(lines)
         if formatted_lines != None:
@@ -183,8 +222,8 @@ def table_creator(script):
                 formatted_lines = text_splitter(compiled_line)
             scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
+            table.add_row(line_generator(formatted_lines, 'text'))
 
-            table.add_row(line_generator(formatted_lines, 'text', index_list))
         index += 1
     return str(table)
 
