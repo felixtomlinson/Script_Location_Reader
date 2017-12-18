@@ -123,23 +123,6 @@ def scene_number_two_anywhere_with_split_lists(script_as_list):
         if number_of_occurences == 2:
             return number
 
-# def scene_number_finder_extreme(script_as_list):
-#     upper_range_number = potential_scene_number_compiler(script_as_list[1])
-#     print upper_range_number
-#     lower_range_number = potential_scene_number_compiler(script_as_list[0])
-#     print lower_range_number
-#     upper_searchable_script_as_list = list_splitter(script_as_list[1])
-#     lower_searchable_script_as_list = list_splitter(script_as_list[0])
-#     for numbers in upper_range_number:
-#         number_of_occurences = lower_searchable_script_as_list.count(numbers)
-#         if number_of_occurences == 1:
-#             print 'Uses scene_number_finder_extreme lower '+str(numbers)
-#             return numbers
-#     for numbers in lower_range_number:
-#         number_of_occurences = upper_searchable_script_as_list.count(numbers)
-#         if number_of_occurences == 1:
-#             print 'Uses scene_number_finder_extreme upper '+str(numbers)
-#             return numbersscene_number = scene_number_two_anywhere(trimmed_script)
 
 def script_trimmer(script_as_list, script_length, index, search_range, search_type):
     '''Returns a list of the strings around the string that contain important information\
