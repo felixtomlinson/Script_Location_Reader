@@ -20,9 +20,13 @@ def find_scene_number_indices(text_to_search):
     return indexes
 
 
+def extract_between_scene_indices(text, indices):
+    return text[indices[0]:indices[1]]
+
+
 def find_upper_case_words(text_with_extra):
-    upper_regex = re.compile('[A-Z][A-Z]*')
-    print(upper_regex.findall(text_with_extra))
+    upper_regex = re.compile('[^\n]*')
+    return upper_regex.findall(text_with_extra)
 
 
 def remove_non_upper_case(text_with_extra):
@@ -44,16 +48,6 @@ def remove_key(d, key):
 a = models.Script('Sherlock-A-Study-in-Pink-final-shooting-script.pdf')
 b = models.Script('Brooklyn-Shooting-Script.pdf')
 scripts = [a, b]
-for script in scripts:
-    scene_info = find_scene_number_indices(a.raw_text)
-    scenes = {}
-    for key, value in scene_info.items():
-        scenes[key] = remove_non_upper_case(a.raw_text[value[0]:value[1]])
-    inside_or_out = re.compile("(EXT|INT)")
-    for key, value in scenes.items():
-        if not inside_or_out.match(' '.join(value)):
-            scenes = remove_key(scenes, key)
-    counter = 0
-    for key, value in scenes.items():
-        print(counter, value[0], ' '.join(value[1:-1]), value[-1])
-        counter += 1
+t = set(find_upper_case_words(a.text[832:862]))
+t.remove('')
+print(t)
