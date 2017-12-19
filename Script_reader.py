@@ -7,9 +7,9 @@ from prettytable import PrettyTable
 
 def main():
    print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
-   # print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
-   # print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
-   # print(table_creator('Brooklyn-Shooting-Script.pdf'))
+   print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
+   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   print(table_creator('Brooklyn-Shooting-Script.pdf'))
    pass
 
 def document_reader(file):
@@ -48,6 +48,15 @@ if the location is inside or outside, the location details and what time of day 
                 location_type = important_text[end_of_inside_or_out+1:]
                 time_of_day = 'NA'
                 return [inside_or_out, location_type, time_of_day]
+
+def deleted_scene_detector(important_text):
+    '''If a scene is labelled as omitted or scene delted this will produce a list for the table\
+which reflects that the scene is no longer being used.'''
+    omitted = ['OMITTED', 'SCENE DELETED']
+    for name in omitted:
+        omitted_or_not = important_text.find(name)
+        if omitted_or_not != -1:
+            return ['***NA***', '***OMITTED***','***NA***']
 
 def heading_decider(output_type):
     '''Depending on what type of output has been selected by the user this function creates the headings in the correct format'''
@@ -170,7 +179,6 @@ it then checks to see if they are anywhere else and returns those numbers if the
     lowers = [3, 9, 13]
     uppers = [8, 12, 16]
     combined = zip(lowers,uppers)
-    print combined
     for i, j in combined:
         scene_number = best_guesser(script_as_list, script_length, index, i, j, 'one_on_each_side')
         if scene_number != None:
@@ -213,6 +221,11 @@ def table_creator(script):
             scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
             table.add_row(line_generator(formatted_lines, 'text'))
+        deleted_lines = deleted_scene_detector(lines)
+        if deleted_lines != None:
+            scene_number = scene_numberer(script, index)
+            deleted_lines.insert(0, scene_number)
+            table.add_row(line_generator(deleted_lines, 'text'))
         index += 1
     return str(table)
 
@@ -237,11 +250,14 @@ def csv_creator(script):
             scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
             table += line_generator(formatted_lines, "CSV")
+        deleted_lines = deleted_scene_detector(lines)
+        if deleted_lines != None:
+            scene_number = scene_numberer(script, index)
+            deleted_lines.insert(0, scene_number)
+            table += line_generator(deleted_lines, "CSV")
         index += 1
     csv.write(table)
     csv.close
-
-print csv_creator('A-Long-Way-Down-Shooting-Script.pdf')
 
 def locations_emailer(script):
     '''Sends the user a CSV file with their location information in it'''
