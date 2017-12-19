@@ -146,6 +146,8 @@ in two halves or as one list is determined by search_type'''
         return both_halves
 
 def best_guesser(script_as_list, script_length, index, start, end, search_type):
+    '''Given a range and a selected search type, this function selects a function to carry\
+out a search and returns the number that it returns.'''
     for number in range(start, end):
         trimmed_script = script_trimmer(script_as_list, script_length, index, number, search_type)
         if search_type == 'one_on_each_side':
@@ -211,7 +213,6 @@ def table_creator(script):
             scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
             table.add_row(line_generator(formatted_lines, 'text'))
-
         index += 1
     return str(table)
 
@@ -220,23 +221,27 @@ def file_namer(file):
     return ('Location Information for '+ os.path.splitext(file)[0] + '.csv')
 
 def csv_creator(script):
-    #CHECK THIS AS IT PROBABLY NO LONGER WORKS
     '''This function takes the script as an input and uses the formatted_lines function to add all the locations together and\
     creates a CSV file.'''
     file_name = file_namer(script)
     csv = open(file_name, "w")
     script = document_reader(script)
     table = heading_decider("CSV")
+    index = 0
     for lines in script:
-        lines = important_text_compiler(script, lines)
         formatted_lines = text_splitter(lines)
         if formatted_lines != None:
-            if formatted_lines[1] != '':
-                scene_number = scene_numberer(script, lines)
-                formatted_lines.insert(0, scene_number)
-                table += line_generator(formatted_lines, "CSV")
+            if formatted_lines[1]=='':
+                compiled_line = important_text_compiler(script, lines, index)
+                formatted_lines = text_splitter(compiled_line)
+            scene_number = scene_numberer(script, index)
+            formatted_lines.insert(0, scene_number)
+            table += line_generator(formatted_lines, "CSV")
+        index += 1
     csv.write(table)
     csv.close
+
+print csv_creator('A-Long-Way-Down-Shooting-Script.pdf')
 
 def locations_emailer(script):
     '''Sends the user a CSV file with their location information in it'''
