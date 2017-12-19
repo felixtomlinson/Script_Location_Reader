@@ -101,6 +101,8 @@ It returns a number if it appears both before and after the text.'''
                     return scene_numbers
 
 def scene_number_two_anywhere(script_as_list):
+    '''Finds potential scene numbers in the text, split by lines, around the important text.\
+It returns a number if it appears twice in the text, split by lines.'''
     potential_number = potential_scene_number_compiler(script_as_list)
     for number in potential_number:
         number_of_occurences = potential_number.count(number)
@@ -116,6 +118,8 @@ def list_splitter(list_inputted):
     return list_of_long_strings
 
 def scene_number_two_anywhere_with_split_lists(script_as_list):
+    '''Finds potential scene numbers in the text, split by lines, around the important text.\
+It returns a number if it appears twice in the text, split by spaces.'''
     potential_number = potential_scene_number_compiler(script_as_list)
     script_as_list = list_splitter(script_as_list)
     for number in potential_number:
@@ -123,10 +127,10 @@ def scene_number_two_anywhere_with_split_lists(script_as_list):
         if number_of_occurences == 2:
             return number
 
-
 def script_trimmer(script_as_list, script_length, index, search_range, search_type):
     '''Returns a list of the strings around the string that contain important information\
-the length of the list can be determined by inputting a search range'''
+the length of the list can be determined by inputting a search range. If the list is returned\
+in two halves or as one list is determined by search_type'''
     lower_index = index - search_range
     upper_index = index + search_range
     if lower_index < 0:
@@ -164,6 +168,7 @@ it then checks to see if they are anywhere else and returns those numbers if the
     lowers = [3, 9, 13]
     uppers = [8, 12, 16]
     combined = zip(lowers,uppers)
+    print combined
     for i, j in combined:
         scene_number = best_guesser(script_as_list, script_length, index, i, j, 'one_on_each_side')
         if scene_number != None:
