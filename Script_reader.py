@@ -20,7 +20,7 @@ def document_reader(file):
     text = text.splitlines()
     return text
 
-<<<<<<<
+
 def scene_numberer(script_as_list, index):
     '''Searches the area surrounding the key text to see if there are places where scene numbers that might be\
 it then checks to see if they are anywhere else and returns those numbers if they are'''
@@ -64,10 +64,8 @@ it then checks to see if they are anywhere else and returns those numbers if the
                         return short_strings
     return ''
 
-def text_splitter(important_text):
-=======
+
 def text_splitter (important_text):
->>>>>>>
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
 if the location is inside or outside, the location details and what time of day the actions is happening at'''
     inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']

@@ -21,4 +21,5 @@ def test_extract_between_scene_indices(test_script):
 
 def test_find_useful_text(test_script):
     t = testing_ground.find_scene_number_indices(test_script.text)[1]
-    assert "INT. JOHN’S BEDSIT - NIGHT" == testing_ground.find_upper_case_words(test_script.text)
+    assert "INT. JOHN’S BEDSIT - NIGHT" == testing_ground.find_upper_case_words(
+        testing_ground.extract_between_scene_indices(test_script.text, t))
