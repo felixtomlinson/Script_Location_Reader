@@ -18,6 +18,74 @@ def document_reader(file):
     text = text.splitlines()
     return text
 
+def split_text_by_given_times_of_day(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out):
+    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'DAWN', 'MORNING', 'SUNSET', 'LATE AFTERNOON']
+    for times in times_in_the_day:
+        start_of_time_of_day = important_text_without_inside_or_out.find(times)
+        if start_of_time_of_day != -1:
+            end_of_location_type = start_of_time_of_day
+            if important_text_without_inside_or_out[start_of_time_of_day-1] == ' ':
+                end_of_location_type = start_of_time_of_day - 1
+            if important_text_without_inside_or_out[start_of_time_of_day-2] == '-':
+                end_of_location_type = start_of_time_of_day - 3
+            location_type = important_text_without_inside_or_out[end_of_inside_or_out+1:end_of_location_type]
+            if location_type != '':
+                if location_type[-1] == '.':
+                    location_type = location_type[:-1]
+            time_of_day = important_text_without_inside_or_out[start_of_time_of_day:]
+            return [inside_or_out, location_type, time_of_day]
+
+def split_text_by_hyphens(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out):
+    hyphen_number = important_text_without_inside_or_out.rfind('- ')
+    if important_text_without_inside_or_out[hyphen_number-1] == ' ':
+        stop_number = hyphen_number-1
+    location_type = important_text_without_inside_or_out[end_of_inside_or_out+1:hyphen_number-1]
+    time_of_day = important_text_without_inside_or_out[hyphen_number+2:]
+    return [inside_or_out, location_type, time_of_day]
+
+def split_text_by_stops(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out):
+    stop_number = important_text_without_inside_or_out.rfind('.')
+    if important_text_without_inside_or_out[stop_number-1] == ' ':
+        stop_number = stop_number-1
+    location_type = important_text_without_inside_or_out[end_of_inside_or_out+1:stop_number]
+    if location_type[-1] == '.':
+        location_type = location_type[:-1]
+    time_of_day = important_text_without_inside_or_out[stop_number+2:]
+    return [inside_or_out, location_type, time_of_day]
+
+def split_text_without_time_of_day(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out):
+    location_type = important_text_without_inside_or_out[end_of_inside_or_out+1:]
+    time_of_day = 'NA'
+    return [inside_or_out, location_type, time_of_day]
+
+def split_text_returner(important_text_without_inside_or_out, inside_or_out):
+    end_of_inside_or_out = len(inside_or_out)
+    if split_text_by_given_times_of_day(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out) != -1:
+        return split_text_by_given_times_of_day(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out)
+    if important_text_without_inside_or_out.find('- ') != -1:
+        return split_text_by_hyphens(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out)
+    if important_text_without_inside_or_out.rfind('.') != -1:
+        return split_text_by_stops(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out)
+    else:
+        return split_text_without_time_of_day
+
+def split_text_returner_in_reverse(important_text_without_inside_or_out, inside_or_out):
+    end_of_inside_or_out = len(inside_or_out)+1
+    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'DAWN', 'MORNING', 'SUNSET', 'LATE AFTERNOON']
+    for times in times_in_the_day:
+        start_of_time_of_day = important_text_without_inside_or_out.find(times)
+        if important_text_without_inside_or_out.find('- ') != -1:
+            end_of_time_of_day = important_text_without_inside_or_out.find('- ')
+        if important_text_without_inside_or_out.rfind('.') != -1:
+            important_text_without_inside_or_out = important_text_without_inside_or_out[end_of_inside_or_out:]
+            end_of_time_of_day = important_text_without_inside_or_out.find('.') + 1
+        if start_of_time_of_day != -1:
+            location_type = important_text_without_inside_or_out[end_of_time_of_day + 1:]
+            if location_type[-1] == '.':
+                location_type = location_type[:-1]
+            time_of_day = times
+            return [inside_or_out, location_type, time_of_day]
+
 def text_splitter (important_text):
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
 if the location is inside or outside, the location details and what time of day the actions is happening at'''
@@ -25,29 +93,15 @@ if the location is inside or outside, the location details and what time of day 
     for category in inside_or_out_or_both:
         start_of_inside_or_out = important_text.find(category)
         if start_of_inside_or_out != -1:
-            end_of_inside_or_out = start_of_inside_or_out + len(category)
-            inside_or_out = important_text[start_of_inside_or_out:end_of_inside_or_out]
-            times_in_the_day = ['DAY', 'NIGHT', 'EVENING']
-            for times in times_in_the_day:
-                start_of_time_of_day = important_text.find(times)
-                if start_of_time_of_day != -1:
-                    location_type = important_text[end_of_inside_or_out+1:start_of_time_of_day-2]
-                    time_of_day = important_text[start_of_time_of_day:]
-                    return [inside_or_out, location_type, time_of_day]
-            if important_text.find('- ') != -1:
-                hyphen_number = important_text.rfind('-')
-                location_type = important_text[end_of_inside_or_out+1:hyphen_number-1]
-                time_of_day = important_text[hyphen_number+2:]
-                return [inside_or_out, location_type, time_of_day]
-            if important_text.rfind('.') > len(category):
-                stop_number = important_text.rfind('.')
-                location_type = important_text[end_of_inside_or_out+1:stop_number]
-                time_of_day = important_text[stop_number+2:]
-                return [inside_or_out, location_type, time_of_day]
-            else:
-                location_type = important_text[end_of_inside_or_out+1:]
-                time_of_day = 'NA'
-                return [inside_or_out, location_type, time_of_day]
+            if important_text[-1] == '.':
+                important_text = important_text[:-1]
+            important_text = important_text[start_of_inside_or_out:]
+            split_text = split_text_returner(important_text, category)
+            if split_text == None:
+                return split_text
+            if split_text[1] == '':
+                split_text = split_text_returner_in_reverse(important_text, category)
+            return split_text
 
 def deleted_scene_detector(important_text):
     '''If a scene is labelled as omitted or scene delted this will produce a list for the table\
