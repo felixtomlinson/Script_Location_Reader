@@ -6,10 +6,10 @@ from email.mime.text import MIMEText
 from prettytable import PrettyTable
 
 def main():
-   print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+   # print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+   # print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   # print(table_creator('Brooklyn-Shooting-Script.pdf'))
    print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
-   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
-   print(table_creator('Brooklyn-Shooting-Script.pdf'))
    pass
 
 def document_reader(file):
@@ -19,7 +19,9 @@ def document_reader(file):
     return text
 
 def split_text_by_given_times_of_day(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out):
-    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'DAWN', 'MORNING', 'SUNSET', 'LATE AFTERNOON']
+    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN', 'DAWN', 'MORNING', 'SUNSET', 'LATE AFTERNOON', 'LATER']
+    #There is a potential bug here.
+    #If for example morning were before day and you had the string 'INT. DAY. MORNING ROOM.' you'd get a truely weird result.
     for times in times_in_the_day:
         start_of_time_of_day = important_text_without_inside_or_out.find(times)
         if start_of_time_of_day != -1:
@@ -70,8 +72,8 @@ def split_text_returner(important_text_without_inside_or_out, inside_or_out):
         return split_text_without_time_of_day
 
 def split_text_returner_in_reverse(important_text_without_inside_or_out, inside_or_out):
-    end_of_inside_or_out = len(inside_or_out)+1
-    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'DAWN', 'MORNING', 'SUNSET', 'LATE AFTERNOON']
+    end_of_inside_or_out = len(inside_or_out) + 1
+    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN', 'DAWN', 'MORNING', 'SUNSET', 'LATE AFTERNOON', 'LATER']
     for times in times_in_the_day:
         start_of_time_of_day = important_text_without_inside_or_out.find(times)
         if important_text_without_inside_or_out.find('- ') != -1:
@@ -89,7 +91,7 @@ def split_text_returner_in_reverse(important_text_without_inside_or_out, inside_
 def text_splitter (important_text):
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
 if the location is inside or outside, the location details and what time of day the actions is happening at'''
-    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
+    inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.', 'C/U.']
     for category in inside_or_out_or_both:
         start_of_inside_or_out = important_text.find(category)
         if start_of_inside_or_out != -1:
@@ -126,14 +128,13 @@ into useful categories'''
     inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.']
     for category in inside_or_out_or_both:
         if category == string:
-            next_string = index+2
+            next_string = index + 2
             new_string = string + " " + list_of_strings[next_string]
             return new_string
     return string
 
 def rough_scene_checker(script_as_list, index, which_side):
     '''Checks to see if there are any short strings in close proximity to the important text'''
-    #Needs to be improved to strip out non-numbers
     if len(script_as_list[index + 2 * which_side]) <= 5:
         if len (script_as_list[index + 2 * which_side]) > 0:
             if not '.' in script_as_list[index + 2 * which_side]:
@@ -142,7 +143,6 @@ def rough_scene_checker(script_as_list, index, which_side):
 
 def potential_scene_number_compiler(script_as_list):
     '''Returns a list of strings which are shorter than 6 characters'''
-    #Needs to be improved to strip out non-numbers
     potential_strings_within_range = []
     for strings in script_as_list:
         if len(strings) <= 5:
@@ -208,6 +208,40 @@ in two halves or as one list is determined by search_type'''
     else:
         return both_halves
 
+def pattern_finder (a_list):
+    for i, something in enumerate(a_list):
+        try:
+            if a_list[i + 1] == '':
+                if a_list[i - 1] == '':
+                    if len(something) <= 5:
+                        if something.find('.') == -1:
+                            return something
+        except IndexError as e:
+            pass
+
+
+def text_stripper(potential_scene_number):
+    if potential_scene_number == None:
+        return None
+    potential_scene_number = str(potential_scene_number)
+    potential_scene_number = potential_scene_number.upper()
+    letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    count = 0
+    for number in range(0,25):
+        letter1 = potential_scene_number.find(letters[number])
+        if letter1 != -1:
+            if letter1 != None:
+                count += 1
+        letter2 = potential_scene_number.rfind(letters[number])
+        if not letter2 == letter1:
+            count += letter2-letter1
+        if potential_scene_number == letters[number]:
+            count = 3
+    if count >= 2:
+        return None
+    else:
+        return potential_scene_number
+
 def best_guesser(script_as_list, script_length, index, start, end, search_type):
     '''Given a range and a selected search type, this function selects a function to carry\
 out a search and returns the number that it returns.'''
@@ -219,19 +253,15 @@ out a search and returns the number that it returns.'''
             scene_number = scene_number_two_anywhere(trimmed_script)
         elif search_type == 'split_script':
             scene_number = scene_number_two_anywhere_with_split_lists(trimmed_script)
+        elif search_type == 'pattern_finder':
+            scene_number = pattern_finder(trimmed_script)
+        scene_number = text_stripper(scene_number)
         if scene_number != None:
             return scene_number
 
-def scene_numberer(script_as_list, index):
-    '''Searches the area surrounding the key text to see if there are places where scene numbers that might be\
-it then checks to see if they are anywhere else and returns those numbers if they are'''
-    script_length = len(script_as_list)
-    if script_as_list[index-2] == script_as_list[index+2]:
-        if (index-2) > 0:
-            if (index+2) < script_length:
-                return script_as_list[index+2]
-    lowers = [3, 9, 13]
-    uppers = [8, 12, 16]
+def scene_numbers_checker(script_as_list, script_length, index, a):
+    lowers = [a, a+6, a+10]
+    uppers = [a+5, a+9, a+13]
     combined = zip(lowers,uppers)
     for i, j in combined:
         scene_number = best_guesser(script_as_list, script_length, index, i, j, 'one_on_each_side')
@@ -244,13 +274,33 @@ it then checks to see if they are anywhere else and returns those numbers if the
         scene_number = best_guesser(script_as_list, script_length, index, i, j, 'split_script')
         if scene_number != None:
             return scene_number
-    if (script_as_list[index+1]) == '' or (script_as_list[index-1]) == '':
-        scene_number = rough_scene_checker(script_as_list, index, 1)
-        if scene_number == None:
-            scene_number = rough_scene_checker(script_as_list, index, -1)
+    for i, j in combined:
+        scene_number = best_guesser(script_as_list, script_length, index, i, j, 'pattern_finder')
         if scene_number != None:
             return scene_number
-    print script_as_list[index-10:index+10]
+
+def scene_numberer(script_as_list, index):
+    '''Searches the area surrounding the key text to see if there are places where scene numbers that might be\
+it then checks to see if they are anywhere else and returns those numbers if they are'''
+    script_length = len(script_as_list)
+    if script_as_list[index-2] == script_as_list[index+2]:
+        if (index-2) > 0:
+            if (index+2) < script_length:
+                return script_as_list[index+2]
+    scene_number = scene_numbers_checker(script_as_list, script_length, index, 3)
+    if scene_number != None:
+        return scene_number
+    scene_number = scene_numbers_checker(script_as_list, script_length, index, 14)
+    if scene_number != None:
+        return scene_number
+    if (script_as_list[index+1]) == '' or (script_as_list[index-1]) == '':
+        scene_number = rough_scene_checker(script_as_list, index, 1)
+        scene_number = text_stripper(scene_number)
+        if scene_number == None:
+            scene_number = rough_scene_checker(script_as_list, index, -1)
+            scene_number = text_stripper(scene_number)
+        if scene_number != None:
+            return scene_number
     return ''
 
 def line_generator(list, output_type):
