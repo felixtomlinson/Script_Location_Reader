@@ -4,11 +4,12 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from prettytable import PrettyTable
+import csv
 
 def main():
-   # print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
-   # print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
-   # print(table_creator('Brooklyn-Shooting-Script.pdf'))
+   print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   print(table_creator('Brooklyn-Shooting-Script.pdf'))
    print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
    pass
 
@@ -113,13 +114,6 @@ which reflects that the scene is no longer being used.'''
         omitted_or_not = important_text.find(name)
         if omitted_or_not != -1:
             return ['***NA***', '***OMITTED***','***NA***']
-
-def heading_decider(output_type):
-    '''Depending on what type of output has been selected by the user this function creates the headings in the correct format'''
-    if output_type == 'CSV':
-        return ('Scene Number,Internal or external,Type of Location,Time of Day\n')
-    else:
-        return (['Scene Number','Internal or external','Type of Location','Time of Day'])
 
 def important_text_compiler(list_of_strings, string, index):
     '''If the important text is split up by split lines due to how the PDF is formatted\
@@ -303,6 +297,16 @@ it then checks to see if they are anywhere else and returns those numbers if the
             return scene_number
     return ''
 
+
+
+
+def heading_decider(output_type):
+    '''Depending on what type of output has been selected by the user this function creates the headings in the correct format'''
+    if output_type == 'CSV':
+        return ('Scene Number,Internal or external,Type of Location,Time of Day\n')
+    else:
+        return (['Scene Number','Internal or external','Type of Location','Time of Day'])
+
 def line_generator(list, output_type):
     '''Turns a list with three objects in it either into CSV or a table depending on the ouput type selected'''
     if output_type == 'CSV':
@@ -310,11 +314,14 @@ def line_generator(list, output_type):
     else:
         return list
 
+
+
+
 def table_creator(script):
     '''This function takes the script as an input and uses the formatted_lines function to add all the locations together and\
  turns it in into a table.'''
     script = document_reader(script)
-    table = PrettyTable(heading_decider('text'))
+    table = PrettyTable(['Scene Number','Internal or external','Type of Location','Time of Day'])
     index = 0
     for lines in script:
         formatted_lines = text_splitter(lines)
@@ -324,12 +331,12 @@ def table_creator(script):
                 formatted_lines = text_splitter(compiled_line)
             scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
-            table.add_row(line_generator(formatted_lines, 'text'))
+            table.add_row(formatted_lines)
         deleted_lines = deleted_scene_detector(lines)
         if deleted_lines != None:
             scene_number = scene_numberer(script, index)
             deleted_lines.insert(0, scene_number)
-            table.add_row(line_generator(deleted_lines, 'text'))
+            table.add_row(deleted_lines)
         index += 1
     return str(table)
 
@@ -339,11 +346,12 @@ def file_namer(file):
 
 def csv_creator(script):
     '''This function takes the script as an input and uses the formatted_lines function to add all the locations together and\
-    creates a CSV file.'''
+creates a CSV file.'''
     file_name = file_namer(script)
-    csv = open(file_name, "w")
+    csv_file = open(file_name, "w")
+    script_csv = csv.writer(csv_file)
+    script_csv.writerow(['Scene Number','Internal or external','Type of Location','Time of Day'])
     script = document_reader(script)
-    table = heading_decider("CSV")
     index = 0
     for lines in script:
         formatted_lines = text_splitter(lines)
@@ -353,15 +361,16 @@ def csv_creator(script):
                 formatted_lines = text_splitter(compiled_line)
             scene_number = scene_numberer(script, index)
             formatted_lines.insert(0, scene_number)
-            table += line_generator(formatted_lines, "CSV")
+            script_csv.writerow(formatted_lines)
         deleted_lines = deleted_scene_detector(lines)
         if deleted_lines != None:
             scene_number = scene_numberer(script, index)
             deleted_lines.insert(0, scene_number)
-            table += line_generator(deleted_lines, "CSV")
+            script_csv.writerow(deleted_lines)
         index += 1
-    csv.write(table)
-    csv.close
+    csv_file.close
+
+print csv_creator('Brooklyn-Shooting-Script.pdf')
 
 def locations_emailer(script):
     '''Sends the user a CSV file with their location information in it'''
