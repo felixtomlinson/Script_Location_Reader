@@ -1,6 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
-### Example user template template
-### Example user template
 
 # IntelliJ project files
 .idea
@@ -113,6 +111,6 @@ venv.bak/
 .mypy_cache/
 
 
+#text files
+*.txt
 *.pdf
-
-requirements_no_venv\.txt
