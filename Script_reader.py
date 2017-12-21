@@ -239,7 +239,9 @@ def text_stripper(potential_scene_number):
 def best_guesser(script_as_list, script_length, index, start, end, search_type):
     '''Given a range and a selected search type, this function selects a function to carry\
 out a search and returns the number that it returns.'''
-    for number in range(start, end):
+    for number in range(start, end
+print csv_creator('Brooklyn-Shooting-Script.pdf')
+):
         trimmed_script = script_trimmer(script_as_list, script_length, index, number, search_type)
         if search_type == 'one_on_each_side':
             scene_number = scene_number_one_on_each_side(trimmed_script)
@@ -297,26 +299,6 @@ it then checks to see if they are anywhere else and returns those numbers if the
             return scene_number
     return ''
 
-
-
-
-def heading_decider(output_type):
-    '''Depending on what type of output has been selected by the user this function creates the headings in the correct format'''
-    if output_type == 'CSV':
-        return ('Scene Number,Internal or external,Type of Location,Time of Day\n')
-    else:
-        return (['Scene Number','Internal or external','Type of Location','Time of Day'])
-
-def line_generator(list, output_type):
-    '''Turns a list with three objects in it either into CSV or a table depending on the ouput type selected'''
-    if output_type == 'CSV':
-        return list[0] + ',' + list[1] + ',' + list[2] + ',' + list[3] + '\n'
-    else:
-        return list
-
-
-
-
 def table_creator(script):
     '''This function takes the script as an input and uses the formatted_lines function to add all the locations together and\
  turns it in into a table.'''
@@ -370,7 +352,10 @@ creates a CSV file.'''
         index += 1
     csv_file.close
 
-print csv_creator('Brooklyn-Shooting-Script.pdf')
+def csv_remover(script):
+    '''Removes the file created by csv_creator'''
+    file_name = file_namer(script)
+    os.remove(file_name)
 
 def locations_emailer(script):
     '''Sends the user a CSV file with their location information in it'''
@@ -398,11 +383,6 @@ The location information for " + os.path.splitext(script)[0] +  " is attached to
     server.sendmail(fromaddr, toaddr, text)
     csv_remover(script)
     server.quit()
-
-def csv_remover(script):
-    '''Removes the file created by csv_creator'''
-    file_name = file_namer(script)
-    os.remove(file_name)
 
 def option_selector():
     '''Allows user selection to choose the file of the script that needs to be read and \
