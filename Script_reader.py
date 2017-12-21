@@ -90,7 +90,7 @@ def split_text_returner_in_reverse(important_text_without_inside_or_out, inside_
             time_of_day = times
             return [inside_or_out, location_type, time_of_day]
 
-def text_splitter(important_text):
+def text_splitter (important_text):
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
 if the location is inside or outside, the location details and what time of day the actions is happening at'''
     inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.', 'C/U.']
@@ -240,9 +240,7 @@ def text_stripper(potential_scene_number):
 def best_guesser(script_as_list, script_length, index, start, end, search_type):
     '''Given a range and a selected search type, this function selects a function to carry\
 out a search and returns the number that it returns.'''
-    for number in range(start, end
-print csv_creator('Brooklyn-Shooting-Script.pdf')
-):
+    for number in range(start, end):
         trimmed_script = script_trimmer(script_as_list, script_length, index, number, search_type)
         if search_type == 'one_on_each_side':
             scene_number = scene_number_one_on_each_side(trimmed_script)
