@@ -110,7 +110,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-
 #text files
 *.txt
 *.pdf
