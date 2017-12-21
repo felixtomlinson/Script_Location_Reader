@@ -14,8 +14,9 @@ def main():
    pass
 
 def document_reader(file):
-    '''Uses textract to read and return the text of files, split them into different lines and make them uppercase'''
-    text = textract.process(file)
+    '''Uses textract to read and return the text of files, split them into different lines and return the whole thing
+    as a list object'''
+    text = textract.process(file).decode('utf-8')
     text = text.splitlines()
     return text
 
@@ -89,7 +90,7 @@ def split_text_returner_in_reverse(important_text_without_inside_or_out, inside_
             time_of_day = times
             return [inside_or_out, location_type, time_of_day]
 
-def text_splitter (important_text):
+def text_splitter(important_text):
     '''Splits the various important parts of the text out into a list. The important parts for this tool are: \
 if the location is inside or outside, the location details and what time of day the actions is happening at'''
     inside_or_out_or_both = ['INT./EXT.', 'INT.', 'EXT.', 'C/U.']
