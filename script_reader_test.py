@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import Script_reader
 import pytest
 
@@ -41,7 +43,24 @@ def test_text_splitter():
     assert Script_reader.text_splitter(str6) == ['EXT.', "CHARLIES YARD", 'NIGHT X - 22:00']
     assert Script_reader.text_splitter(str7) == ['INT.', 'DINING ROOM, MRS. KEHOES HOUSE', 'EVENING']
 
-def test_text_stripper():
+def test_count_letters():
+    str1 = 'Hello'
+    str2 = '17'
+    str3 = 17
+    str4 = 'JESS'
+    str5 = '27JHAZZZ7'
+    str6 = '35JA'
+    str7 = '29A'
+    assert Script_reader.count_letters(str1) >= 2
+    assert Script_reader.count_letters(str2) < 2
+    assert Script_reader.count_letters(str3) < 2
+    assert Script_reader.count_letters(str4) >= 2
+    assert Script_reader.count_letters(str5) >= 2
+    assert Script_reader.count_letters(str6) >= 2
+    assert Script_reader.count_letters(str7) < 2
+
+
+def test_potential_scene_number_returner():
     str1 = 'Hello'
     str2 = '17'
     str3 = 17
@@ -49,18 +68,39 @@ def test_text_stripper():
     str5 = '27JHA'
     str6 = '35JA'
     str7 = '29A'
-    assert Script_reader.text_stripper(str1) == None
-    assert Script_reader.text_stripper(str2) == '17'
-    assert Script_reader.text_stripper(str3) == '17'
-    assert Script_reader.text_stripper(str4) == None
-    assert Script_reader.text_stripper(str5) == None
-    assert Script_reader.text_stripper(str6) == None
-    assert Script_reader.text_stripper(str7) == '29A'
+    assert Script_reader.potential_scene_number_returner(str1) == None
+    assert Script_reader.potential_scene_number_returner(str2) == '17'
+    assert Script_reader.potential_scene_number_returner(str3) == 17
+    assert Script_reader.potential_scene_number_returner(str4) == None
+    assert Script_reader.potential_scene_number_returner(str5) == None
+    assert Script_reader.potential_scene_number_returner(str6) == None
+    assert Script_reader.potential_scene_number_returner(str7) == '29A'
+
+
+def test_potential_scene_number_compiler():
+    ls1 = ['', '2', '', 'Basil Brown rides up to a large country house on his bicycle.', 'He is in his early fifties; workingman\xe2\x80\x99s suit, cloth cap,', 'gold watch chain; a Suffolk man through and through. An air', 'of solidity and containment.', 'He parks the bike on its stand and knocks on the imposing', '27B', 'suit, boots and bike.', 'BROWN']
+    ls2 = ['AAA', 'GG324AA', '1/123B', 'It is pronounced Praetty.', '', 'BROWN', 'Mrs Praetty. If you\xe2\x80\x99d be so kind.', '', 'Grateley closes the door without inviting Brown in.', 'gardens. She\xe2\x80\x99s in her forties; lace, tweed and cashmere. A', 'delicacy that belies an inner strength.', 'BROWN', 'Did you have many replies to your', 'advertisement?', '', 'Sc', 're', '', '3']
+    assert Script_reader.potential_scene_number_compiler(ls1) == ['2', '27B']
+    assert Script_reader.potential_scene_number_compiler(ls2) == ['1/123B', '3' ]
+
 
 def test_pattern_finder():
     ls1 = ['', '2', '', 'Basil Brown rides up to a large country house on his bicycle.', 'He is in his early fifties; workingman\xe2\x80\x99s suit, cloth cap,', 'gold watch chain; a Suffolk man through and through. An air', 'of solidity and containment.', 'He parks the bike on its stand and knocks on the imposing', 'door. John Grateley, the butler opens it. He clocks Basil\xe2\x80\x99s', 'suit, boots and bike.', 'BROWN']
     ls2 = ['It is pronounced Praetty.', '', 'BROWN', 'Mrs Praetty. If you\xe2\x80\x99d be so kind.', '', 'Grateley closes the door without inviting Brown in.', 'gardens. She\xe2\x80\x99s in her forties; lace, tweed and cashmere. A', 'delicacy that belies an inner strength.', 'BROWN', 'Did you have many replies to your', 'advertisement?', '', 'Sc', 're', '', '3', '', 'EDITH']
-    ls3 = ['EXT. DAY. THE GARDENS.', '', 'en', '', 'Edith Pretty is walking with Brown through her well-tended']
     assert Script_reader.pattern_finder(ls1) == '2'
     assert Script_reader.pattern_finder(ls2) == '3'
-    assert Script_reader.pattern_finder(ls3) == 'en'
+
+def test_add_deleted_scene_info():
+    ls1 = [u'Campbell marches towards us and past, steam swirling around', u'him.', u'1/18', u'', u'OMITTED', u'', u'1/18', u'', u'']
+    ls2 = [u'', u'1/19', u'', u'OMITTED', u'', u'1/19', u'', u'', u'Episode One - BLUE AMENDS - 17/10/12', u'1/19A', ]
+    ls3 = [u'the bloody rain. Danny stares, realizes, then walks.', u'1/42-45 OMITTED', u'1/46', u'', u'1/42-45', u'', u'EXT. TRAIN STATION, PLATFORM - DAY 4 - 11:43', u'', u'1/46',]
+    ls4 = [u'', u'1/23', u'', u'1/24', u'', u'OMITTED', u'', u'1/24', u'']
+    ls5 = [u'yard as agreed.', u'1/23', u'', u'OMITTED', u'', u'1/23', u'', u'1/24', u'OMITTED']
+    assert Script_reader.add_deleted_scene_info(ls1, 'OMITTED', 4) == ['1/18', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls2, 'OMITTED', 3) == ['1/19', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls3, '1/42-45 OMITTED', 1) == ['1/42-45', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls4, 'OMITTED', 5) == ['1/24', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls5, 'OMITTED', 2) == ['1/23', '***NA***', '***OMITTED***','***NA***']
+
+def test_add_normal_scene_info():
+    pass
