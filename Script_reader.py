@@ -26,6 +26,8 @@ def document_reader(file):
 
 
 def split_text_without_time_of_day(important_text_without_inside_or_out, end_of_inside_or_out, inside_or_out):
+    '''Returns internal or external and location type from important text when
+    there is no given time of day.'''
     location_type = important_text_without_inside_or_out[end_of_inside_or_out+1:]
     time_of_day = 'NA'
     return [inside_or_out, location_type, time_of_day]
@@ -60,6 +62,9 @@ def split_text_returner(important_text_without_inside_or_out, end_of_inside_or_o
 
 
 def split_text_returner_in_reverse(important_text_without_inside_or_out, inside_or_out):
+    '''Carries out the same function as split_text_returner but when the order
+    of the important text goes internal or external, time of day, location
+    type.'''
     end_of_inside_or_out = len(inside_or_out) + 1
     times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN', 'DAWN',
     'MORNING', 'SUNSET', 'LATE AFTERNOON', 'LATER']
@@ -135,6 +140,9 @@ def rough_scene_checker(script_as_list, index, which_side):
 
 
 def count_letters(potential_scene_number):
+    '''Counts the number of letters in a potential scene number, if the
+    potential scene number is just a single letter or if it returns a
+    UnicodeEncodeError then the function returns 3.'''
     try:
         potential_scene_number = str(potential_scene_number)
         potential_scene_number = potential_scene_number.upper()
@@ -152,12 +160,18 @@ def count_letters(potential_scene_number):
 
 
 def potential_scene_number_returner(potential_scene_number):
-    '''   '''
+    '''If count letters retuns less than two this returns the potential scene
+    number. If it returns two or more then it returns nothing.'''
     count = count_letters(potential_scene_number)
     if count < 2:
         return potential_scene_number
 
 def potential_scene_number_compiler(script_as_list):
+    '''Iterates through the script as a list and checks each string in the list
+    to see if it is a potential scene number. It firsts checks that they are
+    relatively short and then if they have more than two letters in them. If
+    they are both short and contain few letters then it adds them to a list of
+    probable scene numbers.'''
     potential_strings_within_range = []
     for potential_scene_number in script_as_list:
         if len(potential_scene_number) <= 9:
@@ -237,6 +251,9 @@ def script_trimmer(script_as_list, index, search_range, search_type):
 
 
 def pattern_finder (a_list):
+    '''Iterates through script as a list and looks for patterns that might
+    mean that a string is a scene number, it then checks to see if there are
+    too many letters in the string and if not it retuns the string.'''
     for i, something in enumerate(a_list):
         try:
             if a_list[i + 1] == '':
@@ -267,6 +284,9 @@ def best_guesser(script_as_list, index, start, end, search_type):
 
 
 def scene_numbers_checker(script_as_list, index, a):
+    '''This function holds the established hierarchy of the search types that
+    work out what the scene number might be, it then provides the best guesser
+    numbers at three regular intervals to search between.'''
     lowers = [a, a+6, a+10]
     uppers = [a+5, a+9, a+13]
     combined = zip(lowers,uppers)
@@ -288,10 +308,13 @@ def scene_numbers_checker(script_as_list, index, a):
 
 
 def best_scene_number_checker(script_as_list, script_length, index):
+    '''Checks to see if the scene number is in the position that they should
+    be in, a single gap to the left and right on either side.'''
     if (index-2) > 0:
         if (index+2) < script_length:
             if script_as_list[index-2] == script_as_list[index+2]:
                 return script_as_list[index+2]
+
 
 def scene_numberer(script_as_list, index):
     '''Searches the area surrounding the key text to see if there are places
@@ -318,6 +341,9 @@ def scene_numberer(script_as_list, index):
 
 
 def add_normal_scene_info(script, lines, index):
+    '''This function checks to see if the line has important text in it,
+    formats it, checks the scene number and then adds the formatted lines and
+    the scene numbers together.'''
     formatted_lines = text_splitter(lines)
     if formatted_lines != None:
         if formatted_lines[1]=='':
@@ -327,6 +353,9 @@ def add_normal_scene_info(script, lines, index):
         return scene_number + formatted_lines
 
 def add_deleted_scene_info(script, lines, index):
+    '''This function checks to see if the line has text indicating a deleted
+    scene in it, formats it, checks the scene number and then adds the
+    formatted lines and the scene numbers together.'''
     deleted_lines = deleted_scene_detector(lines)
     if deleted_lines != None:
         lines = lines.split()
@@ -336,8 +365,9 @@ def add_deleted_scene_info(script, lines, index):
 
 
 def table_creator(script):
-    #Could use a list of script numbers, plus the index to work out the missing ones
-    #(as long as we assume sequentialness, there are only gaps of size 1 and we have an if loops that adds As and Bs)
+    # Could use a list of script numbers, plus the index to work out the missing
+    # ones (as long as we assume sequentialness, there are only gaps of size 1
+    # and we have an if loops that adds As and Bs)
     '''This function takes the script as an input and uses the formatted_lines
     function to add all the locations together and turns it in into a table.'''
     script = document_reader(script)
