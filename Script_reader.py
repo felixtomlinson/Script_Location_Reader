@@ -6,21 +6,24 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from prettytable import PrettyTable
+from Location_database import add_to_Scripts_DB
+from Location_database import add_to_LocationsInfo_DB
 import csv
 
 
 def main():
    print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
-   print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
-   print(table_creator('Brooklyn-Shooting-Script.pdf'))
-   print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
+   # print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+   # print(table_creator('Brooklyn-Shooting-Script.pdf'))
+   # print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
    pass
 
 
-def document_reader(file):
+def document_reader(file_name):
     '''Uses textract to read and return the text of files, split them into
     different lines and return the whole thing as a list object'''
-    text = textract.process(file).decode('utf-8')
+    add_to_Scripts_DB(os.path.splitext(file_name)[0])
+    text = textract.process(file_name).decode('utf-8')
     text = text.splitlines()
     return text
 
@@ -340,7 +343,7 @@ def scene_numberer(script_as_list, index):
     return ''
 
 
-def add_normal_scene_info(script, lines, index):
+def add_normal_scene_info(script, lines, index, scriptname):
     '''This function checks to see if the line has important text in it,
     formats it, checks the scene number and then adds the formatted lines and
     the scene numbers together.'''
@@ -350,9 +353,11 @@ def add_normal_scene_info(script, lines, index):
             compiled_line = important_text_compiler(script, lines, index)
             formatted_lines = text_splitter(compiled_line)
         scene_number = [scene_numberer(script, index)]
-        return scene_number + formatted_lines
+        complete_line = scene_number + formatted_lines
+        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        return complete_line
 
-def add_deleted_scene_info(script, lines, index):
+def add_deleted_scene_info(script, lines, index, scriptname):
     '''This function checks to see if the line has text indicating a deleted
     scene in it, formats it, checks the scene number and then adds the
     formatted lines and the scene numbers together.'''
@@ -361,7 +366,9 @@ def add_deleted_scene_info(script, lines, index):
         lines = lines.split()
         script = script[:index-1] + lines + script[index+1:]
         scene_number = [scene_numberer(script, index)]
-        return scene_number + deleted_lines
+        complete_line = scene_number + deleted_lines
+        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        return complete_line
 
 
 def table_creator(script):
@@ -370,24 +377,25 @@ def table_creator(script):
     # and we have an if loops that adds As and Bs)
     '''This function takes the script as an input and uses the formatted_lines
     function to add all the locations together and turns it in into a table.'''
+    scriptname = script
     script = document_reader(script)
     table = PrettyTable(['Scene Number', 'Internal or external',
     'Type of Location', 'Time of Day'])
     index = 0
     for lines in script:
-        formatted_lines = add_normal_scene_info(script, lines, index)
+        formatted_lines = add_normal_scene_info(script, lines, index, scriptname)
         if formatted_lines != None:
             table.add_row(formatted_lines)
-        deleted_lines = add_deleted_scene_info(script, lines, index)
+        deleted_lines = add_deleted_scene_info(script, lines, index, scriptname)
         if deleted_lines != None:
             table.add_row(deleted_lines)
         index += 1
     return str(table)
 
 
-def file_namer(file):
+def file_namer(file_name):
     '''Names the file as a CSV document with a useful description'''
-    return ('Location Information for '+ os.path.splitext(file)[0] + '.csv')
+    return ('Location Information for '+ os.path.splitext(file_name)[0] + '.csv')
 
 
 def csv_creator(script):
