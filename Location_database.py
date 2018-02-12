@@ -15,7 +15,7 @@ def create_database():
         cursor.execute('CREATE DATABASE {};'.format('script_reader_database'))
     except Exception as e:
         print  "This is broken, error {}".format(e)
-        sys.exit(1)
+        connection.exit(1)
 
 
 def create_tables():
@@ -44,9 +44,6 @@ def create_tables():
         cursor.execute(table)
         connection.commit()
     connection.close()
-
-
-create_tables()
 
 
 def connect(database_name):
