@@ -12,17 +12,18 @@ import csv
 
 
 def main():
-   print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
-   # print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
-   # print(table_creator('Brooklyn-Shooting-Script.pdf'))
-   # print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
-   pass
+    print (table_creator('celesteandjesseforever_screenplay.pdf'))
+    # print(table_creator('Sherlock-A-Study-in-Pink-final-shooting-script.pdf'))
+    # print(table_creator('Peaky-Blinders-S1-Ep1.pdf'))
+    # print(table_creator('Brooklyn-Shooting-Script.pdf'))
+    # print(table_creator('A-Long-Way-Down-Shooting-Script.pdf'))
+    pass
 
 
 def document_reader(file_name):
     '''Uses textract to read and return the text of files, split them into
     different lines and return the whole thing as a list object'''
-    add_to_Scripts_DB(os.path.splitext(file_name)[0])
+    #add_to_Scripts_DB(os.path.splitext(file_name)[0])
     text = textract.process(file_name).decode('utf-8')
     text = text.splitlines()
     return text
@@ -42,11 +43,14 @@ def split_text_returner(important_text_without_inside_or_out, end_of_inside_or_o
     location and the time of day using the location of the times of day
     as a reference point. If there is no time of day this returns time of day
     as NA and the location type'''
-    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN',
-    'DAWN', 'MORNING', 'SUNSET', 'LATE AFTERNOON', 'LATER']
+    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN', 'BEFORE DAWN',
+    'DAWN', 'MORNING', 'SUNSET', 'SUNRISE', 'Sundown', 'LATE AFTERNOON',
+    'AFTERNOON', 'MINUTES LATER', 'MOMENTS LATER', 'LATER', 'SAME']
     #There is a potential bug here.
     #If for example morning were before day and you had the string
     # 'INT. DAY. MORNING ROOM.' you'd get a truely weird result.
+    #Should it rather be if it contains one of these things then do this stuff
+    # rather that for these things do all these tests and see if it contains them
     for times in times_in_the_day:
         start_of_time_of_day = important_text_without_inside_or_out.find(times)
         if start_of_time_of_day != -1:
@@ -69,8 +73,9 @@ def split_text_returner_in_reverse(important_text_without_inside_or_out, inside_
     of the important text goes internal or external, time of day, location
     type.'''
     end_of_inside_or_out = len(inside_or_out) + 1
-    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN', 'DAWN',
-    'MORNING', 'SUNSET', 'LATE AFTERNOON', 'LATER']
+    times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN', 'BEFORE DAWN',
+    'DAWN', 'MORNING', 'SUNSET', 'SUNRISE', 'Sundown', 'LATE AFTERNOON',
+    'AFTERNOON', 'MINUTES LATER', 'MOMENTS LATER', 'LATER', 'SAME']
     for times in times_in_the_day:
         start_of_time_of_day = important_text_without_inside_or_out.find(times)
         if important_text_without_inside_or_out.find('- ') != -1:
@@ -108,14 +113,19 @@ def text_splitter (important_text):
 
 
 def deleted_scene_detector(important_text):
+    #Make the over black issue it's own function
     '''If a scene is labelled as omitted or scene delted this will produce a
     list to be inputted into the table which shows the user that the scene is
     no longer being used.'''
     omitted = ['OMITTED', 'SCENE DELETED']
+    over_black = 'OVER BLACK'
     for name in omitted:
         omitted_or_not = important_text.find(name)
+        over_black_or_not = important_text.find(over_black)
         if omitted_or_not != -1:
             return ['***NA***', '***OMITTED***','***NA***']
+        if over_black_or_not != -1:
+            return ['***NA***', 'OVER BLACK','***NA***']
 
 
 def important_text_compiler(list_of_strings, string, index):
@@ -149,7 +159,7 @@ def count_letters(potential_scene_number):
     try:
         potential_scene_number = str(potential_scene_number)
         potential_scene_number = potential_scene_number.upper()
-        letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*!'
         count = 0
         for letter in letters:
             if letter in potential_scene_number:
@@ -316,7 +326,8 @@ def best_scene_number_checker(script_as_list, script_length, index):
     if (index-2) > 0:
         if (index+2) < script_length:
             if script_as_list[index-2] == script_as_list[index+2]:
-                return script_as_list[index+2]
+                if count_letters(script_as_list[index+2]) < 2:
+                    return script_as_list[index+2]
 
 
 def scene_numberer(script_as_list, index):
@@ -354,7 +365,7 @@ def add_normal_scene_info(script, lines, index, scriptname):
             formatted_lines = text_splitter(compiled_line)
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + formatted_lines
-        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        #add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 def add_deleted_scene_info(script, lines, index, scriptname):
@@ -367,7 +378,7 @@ def add_deleted_scene_info(script, lines, index, scriptname):
         script = script[:index-1] + lines + script[index+1:]
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + deleted_lines
-        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        #add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 
