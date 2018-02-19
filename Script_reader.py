@@ -23,7 +23,7 @@ def main():
 def document_reader(file_name):
     '''Uses textract to read and return the text of files, split them into
     different lines and return the whole thing as a list object'''
-    #add_to_Scripts_DB(os.path.splitext(file_name)[0])
+    add_to_Scripts_DB(os.path.splitext(file_name)[0])
     text = textract.process(file_name).decode('utf-8')
     text = text.splitlines()
     return text
@@ -365,7 +365,7 @@ def add_normal_scene_info(script, lines, index, scriptname):
             formatted_lines = text_splitter(compiled_line)
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + formatted_lines
-        #add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 def add_deleted_scene_info(script, lines, index, scriptname):
@@ -378,7 +378,7 @@ def add_deleted_scene_info(script, lines, index, scriptname):
         script = script[:index-1] + lines + script[index+1:]
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + deleted_lines
-        #add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 
