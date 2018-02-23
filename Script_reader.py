@@ -423,7 +423,6 @@ def csv_creator(script):
         formatted_lines = add_normal_scene_info(script, lines, index)
         if formatted_lines != None:
             formatted_lines[2] = formatted_lines[2].encode('utf-8')
-            print formatted_lines
             script_csv.writerow(formatted_lines)
         deleted_lines = add_deleted_scene_info(script, lines, index)
         if deleted_lines != None:
@@ -472,15 +471,14 @@ def locations_emailer(script):
 def option_selector():
     '''Allows user selection to choose the file of the script that needs to be
     read and determine the output type of the file.'''
-    script = raw_input('\n\nPlease input the script that you want the \
+    script = input('\n\nPlease input the script that you want the \
     locations for (the full path):')
-    choice = raw_input('\n\nPlease pick the method that you would prefer to \
+    choice = input('\n\nPlease pick the method that you would prefer to \
     recieve your location information: "onscreen", by "email", or as a \
     "download":\n\n')
     choice = choice.upper()
     if choice == 'ONSCREEN':
-        print ('\n'+table_creator(script))
-        return ('\n\nThanks very much for using our Script Location Reader.')
+        return ('\n' + table_creator(script) + '\n\nThanks very much for using our Script Location Reader.')
     if choice == 'EMAIL':
         locations_emailer(script)
         return ('\n\nThanks very much for using our Script Location Reader.')
