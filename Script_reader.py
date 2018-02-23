@@ -401,7 +401,7 @@ def table_creator(script):
         if deleted_lines != None:
             table.add_row(deleted_lines)
         index += 1
-    return str(table)
+    return table
 
 
 def file_namer(file_name):

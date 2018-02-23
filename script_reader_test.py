@@ -2,6 +2,7 @@
 
 import Script_reader
 import pytest
+from app.classes import Mail
 
 '''def test_return_page_numbers_and_distance():
     ls = ["", "1", "",'A STUDY IN PINK', '', 'SHOOTING SCRIPT - GREEN AMENDED', '', '18/04/10', '', 'Screen snows and -A blizzard of cuts round various news reports, fast, just', 'snatched words and phrases -NEWSEADER', '-- Afghanistan -ITN NEWSREADER', '-- British troops involved in a -SKY NEWSREADER', '-- four dead, two injured -Video phone: chaotic, accidental footage, just the camera', 'still running - a dirt road, a crashed jeep belching smoke,', 'gunfire, soldiers running. We hear a voice yelling -Watson!!', '', 'MAN', '', 'News reports -BBC NEWSREADER', '-- increased hostilities over the', 'last few weeks -SKY NEWSREADER', '-- until relatives have been', 'informed -Video phone -Watson!!', '', 'MAN', '', 'News reports -ITN NEWSREADER', '-- two more have died in the worst', 'outbreak of violence -SKY NEWSREADER', '-- said his thoughts were with the', 'victims families -Video phone -Watson!!', '', 'MAN', '', 'And on that we cut to:', '1', '', 'INT. JOHN\xe2\x80\x99S BEDSIT - NIGHT', '', '1', '', 'Close on a pair of eyes snapping open.', 'Wider:', '', '1.', '', '\x0cA STUDY IN PINK', '', 'SHOOTING SCRIPT - GREEN AMENDED', '', '18/04/10', '', 'A man, startling awake, sweating in his bed. A single bed in', 'the dullest, plainest room. He sits up, calming himself,', 'letting his breathing return to normal.', 'Dr. John Watson. Early thirties, thickset, weathered.', 'Something slightly dazed and pained in his eyes. He\xe2\x80\x99s been', 'through hard times, seen bad things.', 'Looks around the room. A bare minimum of personal', 'possessions, neatly folded clothes.', 'The opposite wall.', '', 'Leaning by the door, a walking cane.', '', 'Close on John, looking at it - frowns.', '2', '', 'Fierce, resentful.', '', 'INT. JOHN\xe2\x80\x99S BEDSIT - DAY', '', '2', '', 'Later - first light. Close on a coffee cup as it is set down', 'on the desk. Panning down the desk drawer as John pulls it', 'open, removes a laptop computer --- revealing something else in the drawer. A hand gun', '(whatever gun John would\xe2\x80\x99ve had in Afghanistan.)', 'John\xe2\x80\x99s look holds on the gun for a moment, like it\xe2\x80\x99s a', 'curious temptation to him --- then he firmly closes the drawer.', 'The lap top computer open at:', 'A blog page.', '', 'Closer on the Page Title:', '', 'The Personal Blog Of Dr. John H. Watson --- panning down the screen to an empty page.', 'winking away, expectant.', '', 'The cursor', '', 'We roll focus to see John\xe2\x80\x99s face, reflected.', 'effort of concentration.', '', 'Frowning.', '', 'An', '', 'ELLA', '(V.O.)', 'How\xe2\x80\x99s your blog going?', '3', '', 'INT. THERAPIST\xe2\x80\x99S CONSULTING ROOM - DAY (11.00 AM)', '', '3', '', 'Ella - a therapist - sitting opposite John Watson, her', 'notepad out.', 'John sits stiffly in his chair.', 'embarrassed.', 'Oh, fine.', '', 'JOHN', 'Good.', '', 'Out of place.', '', 'A little', '', 'Very good.', '', 'Ella looks at him, knowingly.', '', '2.', '', '\x0cA STUDY IN PINK', '', 'SHOOTING SCRIPT - GREEN AMENDED', '', '18/04/10', '', 'ELLA']
@@ -92,15 +93,22 @@ def test_pattern_finder():
 
 def test_add_deleted_scene_info():
     ls1 = [u'Campbell marches towards us and past, steam swirling around', u'him.', u'1/18', u'', u'OMITTED', u'', u'1/18', u'', u'']
-    ls2 = [u'', u'1/19', u'', u'OMITTED', u'', u'1/19', u'', u'', u'Episode One - BLUE AMENDS - 17/10/12', u'1/19A', ]
+    ls2 = [u'', u'1/19', u'', u'OMITTED', u'connection', u'1/19', u'', u'', u'Episode One - BLUE AMENDS - 17/10/12', u'1/19A', ]
     ls3 = [u'the bloody rain. Danny stares, realizes, then walks.', u'1/42-45 OMITTED', u'1/46', u'', u'1/42-45', u'', u'EXT. TRAIN STATION, PLATFORM - DAY 4 - 11:43', u'', u'1/46',]
     ls4 = [u'', u'1/23', u'', u'1/24', u'', u'OMITTED', u'', u'1/24', u'']
     ls5 = [u'yard as agreed.', u'1/23', u'', u'OMITTED', u'', u'1/23', u'', u'1/24', u'OMITTED']
-    assert Script_reader.add_deleted_scene_info(ls1, 'OMITTED', 4) == ['1/18', '***NA***', '***OMITTED***','***NA***']
-    assert Script_reader.add_deleted_scene_info(ls2, 'OMITTED', 3) == ['1/19', '***NA***', '***OMITTED***','***NA***']
-    assert Script_reader.add_deleted_scene_info(ls3, '1/42-45 OMITTED', 1) == ['1/42-45', '***NA***', '***OMITTED***','***NA***']
-    assert Script_reader.add_deleted_scene_info(ls4, 'OMITTED', 5) == ['1/24', '***NA***', '***OMITTED***','***NA***']
-    assert Script_reader.add_deleted_scene_info(ls5, 'OMITTED', 2) == ['1/23', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls1, 'OMITTED', 4, '') == ['1/18', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls2, 'OMITTED', 3, '') == ['1/19', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls3, '1/42-45 OMITTED', 1, '') == ['1/42-45', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls4, 'OMITTED', 5, '') == ['1/24', '***NA***', '***OMITTED***','***NA***']
+    assert Script_reader.add_deleted_scene_info(ls5, 'OMITTED', 2, '') == ['1/23', '***NA***', '***OMITTED***','***NA***']
 
 def test_add_normal_scene_info():
     pass
+
+
+def test_gmail_login():
+    password = open('emailpasswordsetting.txt', 'r')
+    password = password.read()
+    m = Mail('script.location.reader@gmail.com', password)
+    assert m.login()[0] == 235
