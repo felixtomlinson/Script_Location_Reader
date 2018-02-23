@@ -23,7 +23,7 @@ def main():
 def document_reader(file_name):
     '''Uses textract to read and return the text of files, split them into
     different lines and return the whole thing as a list object'''
-    add_to_Scripts_DB(os.path.splitext(file_name)[0])
+    # add_to_Scripts_DB(os.path.splitext(file_name)[0])
     text = textract.process(file_name).decode('utf-8')
     text = text.splitlines()
     return text
@@ -365,7 +365,7 @@ def add_normal_scene_info(script, lines, index, scriptname):
             formatted_lines = text_splitter(compiled_line)
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + formatted_lines
-        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        # add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 def add_deleted_scene_info(script, lines, index, scriptname):
@@ -378,7 +378,7 @@ def add_deleted_scene_info(script, lines, index, scriptname):
         script = script[:index-1] + lines + script[index+1:]
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + deleted_lines
-        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        # add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 
@@ -406,12 +406,13 @@ def table_creator(script):
 
 def file_namer(file_name):
     '''Names the file as a CSV document with a useful description'''
-    return ('Location Information for '+ os.path.splitext(file_name)[0] + '.csv')
-
+    # return ('Location Information for '+ os.path.splitext(file_name)[0] + '.csv')
+    return 'script_locs.csv'
 
 def csv_creator(script):
     '''This function takes the script as an input and uses the formatted_lines
     function to add all the locations together and creates a CSV file.'''
+    scriptname = script
     file_name = file_namer(script)
     csv_file = open(file_name, "w")
     script_csv = csv.writer(csv_file)
@@ -420,11 +421,11 @@ def csv_creator(script):
     script = document_reader(script)
     index = 0
     for lines in script:
-        formatted_lines = add_normal_scene_info(script, lines, index)
+        formatted_lines = add_normal_scene_info(script, lines, index, scriptname)
         if formatted_lines != None:
             formatted_lines[2] = formatted_lines[2].encode('utf-8')
             script_csv.writerow(formatted_lines)
-        deleted_lines = add_deleted_scene_info(script, lines, index)
+        deleted_lines = add_deleted_scene_info(script, lines, index, scriptname)
         if deleted_lines != None:
             script_csv.writerow(deleted_lines)
         index += 1
@@ -437,24 +438,21 @@ def csv_remover(script):
     os.remove(file_name)
 
 
-def locations_emailer(script):
+def locations_emailer(script, address):
     '''Sends the user an email with a CSV file with their location information
     attached'''
     file_name = file_namer(script)
     fromaddr = "script.location.reader@gmail.com"
     password = open('emailpasswordsetting.txt',"r")
     password = password.read()
-    toaddr = raw_input('\nPlease type the email you want the document to be \
-    sent to:\n')
     msg = MIMEMultipart()
     msg['From'] = 'Script Location Reader'
-    msg['To'] = toaddr
+    msg['To'] = address
     msg['Subject'] = os.path.splitext(file_name)[0]
     body = "Thank you very much for using our Script Location Reader \
-    service.\n\n The location information for " + os.path.splitext(script)[0]
-    +  " is attached to this email."
+    service.\n\n The location information for " + os.path.splitext(script)[0] + " is attached to this email."
     csv_creator(script)
-    new_file = open(file_name, "rw")
+    new_file = open(file_name, "w+")
     csv = MIMEText(new_file.read())
     csv.add_header('Content-Disposition', 'attachment', filename=file_name)
     msg.attach(MIMEText(body, 'plain'))
@@ -463,33 +461,33 @@ def locations_emailer(script):
     server.starttls()
     server.login(fromaddr, password)
     text = msg.as_string()
-    server.sendmail(fromaddr, toaddr, text)
+    server.sendmail(fromaddr, address, text)
     csv_remover(script)
     server.quit()
 
 
-def option_selector():
-    '''Allows user selection to choose the file of the script that needs to be
-    read and determine the output type of the file.'''
-    script = input('\n\nPlease input the script that you want the \
-    locations for (the full path):')
-    choice = input('\n\nPlease pick the method that you would prefer to \
-    recieve your location information: "onscreen", by "email", or as a \
-    "download":\n\n')
-    choice = choice.upper()
-    if choice == 'ONSCREEN':
-        return ('\n' + table_creator(script) + '\n\nThanks very much for using our Script Location Reader.')
-    if choice == 'EMAIL':
-        locations_emailer(script)
-        return ('\n\nThanks very much for using our Script Location Reader.')
-    if choice == 'DOWNLOAD':
-        csv_creator(script)
-        return ('\n\nThanks very much for using our Script Location Reader.')
-    else:
-        choice = raw_input('Please select one of "onscreen", "email", or \
-        "download".')
-        option_selector()
-        return ('\n\nThanks very much for using our Script Location Reader.')
+# def option_selector():
+#     '''Allows user selection to choose the file of the script that needs to be
+#     read and determine the output type of the file.'''
+#     script = input('\n\nPlease input the script that you want the \
+#     locations for (the full path):')
+#     choice = input('\n\nPlease pick the method that you would prefer to \
+#     recieve your location information: "onscreen", by "email", or as a \
+#     "download":\n\n')
+#     choice = choice.upper()
+#     if choice == 'ONSCREEN':
+#         return ('\n' + table_creator(script) + '\n\nThanks very much for using our Script Location Reader.')
+#     if choice == 'EMAIL':
+#         locations_emailer(script)
+#         return ('\n\nThanks very much for using our Script Location Reader.')
+#     if choice == 'DOWNLOAD':
+#         csv_creator(script)
+#         return ('\n\nThanks very much for using our Script Location Reader.')
+#     else:
+#         choice = raw_input('Please select one of "onscreen", "email", or \
+#         "download".')
+#         option_selector()
+#         return ('\n\nThanks very much for using our Script Location Reader.')
 
 
 #option_selector()
