@@ -438,7 +438,7 @@ def csv_remover(script):
     os.remove(file_name)
 
 
-def locations_emailer(script, address):
+def locations_emailer(script, email_address):
     '''Sends the user an email with a CSV file with their location information
     attached'''
     file_name = file_namer(script)
@@ -447,7 +447,7 @@ def locations_emailer(script, address):
     password = password.read()
     msg = MIMEMultipart()
     msg['From'] = 'Script Location Reader'
-    msg['To'] = address
+    msg['To'] = email_address
     msg['Subject'] = os.path.splitext(file_name)[0]
     body = "Thank you very much for using our Script Location Reader \
     service.\n\n The location information for " + os.path.splitext(script)[0] + " is attached to this email."
@@ -461,7 +461,7 @@ def locations_emailer(script, address):
     server.starttls()
     server.login(fromaddr, password)
     text = msg.as_string()
-    server.sendmail(fromaddr, address, text)
+    server.sendmail(fromaddr, email_address, text)
     csv_remover(script)
     server.quit()
 
