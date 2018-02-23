@@ -461,7 +461,7 @@ def locations_emailer(script, email_address):
     server.starttls()
     server.login(fromaddr, password)
     text = msg.as_string()
-    server.sendmail(fromaddr, toaddr, text)
+    server.sendmail(fromaddr, email_address, text)
     csv_remover(script)
     server.quit()
 
