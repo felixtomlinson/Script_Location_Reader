@@ -406,8 +406,8 @@ def table_creator(script):
 
 def file_namer(file_name):
     '''Names the file as a CSV document with a useful description'''
-    return ('Location Information for '+ os.path.splitext(file_name)[0] + '.csv')
-
+    # return ('Location Information for '+ os.path.splitext(file_name)[0] + '.csv')
+    return 'script_locs.csv'
 
 def csv_creator(script):
     '''This function takes the script as an input and uses the formatted_lines
@@ -443,31 +443,27 @@ def locations_emailer(script, email_address):
     attached'''
     file_name = file_namer(script)
     fromaddr = "script.location.reader@gmail.com"
-    password = open('emailpasswordsetting.txt','r')
+    password = open('emailpasswordsetting.txt',"r")
     password = password.read()
     msg = MIMEMultipart()
     msg['From'] = 'Script Location Reader'
     msg['To'] = email_address
     msg['Subject'] = os.path.splitext(file_name)[0]
-    body = "Thank you very much for using our Script Location Reader\
+    body = "Thank you very much for using our Script Location Reader \
     service.\n\n The location information for " + os.path.splitext(script)[0] + " is attached to this email."
     csv_creator(script)
-    new_file = open(file_name, "rw")
+    new_file = open(file_name, "w+")
     csv = MIMEText(new_file.read())
     csv.add_header('Content-Disposition', 'attachment', filename=file_name)
     msg.attach(MIMEText(body, 'plain'))
     msg.attach(csv)
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    hello = server.login(fromaddr, password)
-    print hello
+    server.login(fromaddr, password)
     text = msg.as_string()
     server.sendmail(fromaddr, email_address, text)
     csv_remover(script)
     server.quit()
-
-
-locations_emailer('Brooklyn-Shooting-Script.pdf','felix@apply4.com')
 
 
 # def option_selector():

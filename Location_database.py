@@ -1,6 +1,8 @@
 import bleach
 import psycopg2
 from datetime import datetime
+
+import sys
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from Database_initial_connection import connect_for_table_and_database_creation
 
@@ -14,7 +16,7 @@ def create_database():
         cursor.execute('DROP DATABASE IF EXISTS {};'.format('script_reader_database'))
         cursor.execute('CREATE DATABASE {};'.format('script_reader_database'))
     except Exception as e:
-        print  "This is broken, error {}".format(e)
+        print("This is broken, error {}".format(e))
         connection.exit(1)
 
 
@@ -29,7 +31,7 @@ def create_tables():
         );
         """,
     """
-    CREATE TABLE IF NOT EXISTS locations_info(
+    CREATE TABLE IF NOT EXISTxS locations_info(
         location_no SERIAL PRIMARY KEY,
         scene_no VARCHAR(10),
         int_or_ext VARCHAR(8),
@@ -54,7 +56,7 @@ def connect(database_name):
         c = db.cursor()
         return db, c
     except psycopg2.Error as e:
-        print "Unable to connect to database"
+        print("Unable to connect to database")
         sys.exit(1)
 
 
