@@ -23,7 +23,7 @@ def main():
 def document_reader(file_name):
     '''Uses textract to read and return the text of files, split them into
     different lines and return the whole thing as a list object'''
-    add_to_Scripts_DB(os.path.splitext(file_name)[0])
+    # add_to_Scripts_DB(os.path.splitext(file_name)[0])
     text = textract.process(file_name).decode('utf-8')
     text = text.splitlines()
     return text
@@ -365,7 +365,7 @@ def add_normal_scene_info(script, lines, index, scriptname):
             formatted_lines = text_splitter(compiled_line)
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + formatted_lines
-        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        # add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 def add_deleted_scene_info(script, lines, index, scriptname):
@@ -378,7 +378,7 @@ def add_deleted_scene_info(script, lines, index, scriptname):
         script = script[:index-1] + lines + script[index+1:]
         scene_number = [scene_numberer(script, index)]
         complete_line = scene_number + deleted_lines
-        add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
+        # add_to_LocationsInfo_DB(complete_line, os.path.splitext(scriptname)[0])
         return complete_line
 
 
@@ -412,6 +412,7 @@ def file_namer(file_name):
 def csv_creator(script):
     '''This function takes the script as an input and uses the formatted_lines
     function to add all the locations together and creates a CSV file.'''
+    scriptname = script
     file_name = file_namer(script)
     csv_file = open(file_name, "w")
     script_csv = csv.writer(csv_file)
@@ -420,11 +421,11 @@ def csv_creator(script):
     script = document_reader(script)
     index = 0
     for lines in script:
-        formatted_lines = add_normal_scene_info(script, lines, index)
+        formatted_lines = add_normal_scene_info(script, lines, index, scriptname)
         if formatted_lines != None:
             formatted_lines[2] = formatted_lines[2].encode('utf-8')
             script_csv.writerow(formatted_lines)
-        deleted_lines = add_deleted_scene_info(script, lines, index)
+        deleted_lines = add_deleted_scene_info(script, lines, index, scriptname)
         if deleted_lines != None:
             script_csv.writerow(deleted_lines)
         index += 1
@@ -442,15 +443,14 @@ def locations_emailer(script, email_address):
     attached'''
     file_name = file_namer(script)
     fromaddr = "script.location.reader@gmail.com"
-    password = open('emailpasswordsetting.txt',"r")
+    password = open('emailpasswordsetting.txt','r')
     password = password.read()
     msg = MIMEMultipart()
     msg['From'] = 'Script Location Reader'
     msg['To'] = email_address
     msg['Subject'] = os.path.splitext(file_name)[0]
-    body = "Thank you very much for using our Script Location Reader \
-    service.\n\n The location information for " + os.path.splitext(script)[0]
-    +  " is attached to this email."
+    body = "Thank you very much for using our Script Location Reader\
+    service.\n\n The location information for " + os.path.splitext(script)[0] + " is attached to this email."
     csv_creator(script)
     new_file = open(file_name, "rw")
     csv = MIMEText(new_file.read())
@@ -459,11 +459,15 @@ def locations_emailer(script, email_address):
     msg.attach(csv)
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login(fromaddr, password)
+    hello = server.login(fromaddr, password)
+    print hello
     text = msg.as_string()
     server.sendmail(fromaddr, email_address, text)
     csv_remover(script)
     server.quit()
+
+
+locations_emailer('Brooklyn-Shooting-Script.pdf','felix@apply4.com')
 
 
 # def option_selector():
