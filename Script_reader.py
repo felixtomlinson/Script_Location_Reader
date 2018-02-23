@@ -437,18 +437,16 @@ def csv_remover(script):
     os.remove(file_name)
 
 
-def locations_emailer(script):
+def locations_emailer(script, email_address):
     '''Sends the user an email with a CSV file with their location information
     attached'''
     file_name = file_namer(script)
     fromaddr = "script.location.reader@gmail.com"
     password = open('emailpasswordsetting.txt',"r")
     password = password.read()
-    toaddr = raw_input('\nPlease type the email you want the document to be \
-    sent to:\n')
     msg = MIMEMultipart()
     msg['From'] = 'Script Location Reader'
-    msg['To'] = toaddr
+    msg['To'] = email_address
     msg['Subject'] = os.path.splitext(file_name)[0]
     body = "Thank you very much for using our Script Location Reader \
     service.\n\n The location information for " + os.path.splitext(script)[0]
@@ -468,28 +466,28 @@ def locations_emailer(script):
     server.quit()
 
 
-def option_selector():
-    '''Allows user selection to choose the file of the script that needs to be
-    read and determine the output type of the file.'''
-    script = input('\n\nPlease input the script that you want the \
-    locations for (the full path):')
-    choice = input('\n\nPlease pick the method that you would prefer to \
-    recieve your location information: "onscreen", by "email", or as a \
-    "download":\n\n')
-    choice = choice.upper()
-    if choice == 'ONSCREEN':
-        return ('\n' + table_creator(script) + '\n\nThanks very much for using our Script Location Reader.')
-    if choice == 'EMAIL':
-        locations_emailer(script)
-        return ('\n\nThanks very much for using our Script Location Reader.')
-    if choice == 'DOWNLOAD':
-        csv_creator(script)
-        return ('\n\nThanks very much for using our Script Location Reader.')
-    else:
-        choice = raw_input('Please select one of "onscreen", "email", or \
-        "download".')
-        option_selector()
-        return ('\n\nThanks very much for using our Script Location Reader.')
+# def option_selector():
+#     '''Allows user selection to choose the file of the script that needs to be
+#     read and determine the output type of the file.'''
+#     script = input('\n\nPlease input the script that you want the \
+#     locations for (the full path):')
+#     choice = input('\n\nPlease pick the method that you would prefer to \
+#     recieve your location information: "onscreen", by "email", or as a \
+#     "download":\n\n')
+#     choice = choice.upper()
+#     if choice == 'ONSCREEN':
+#         return ('\n' + table_creator(script) + '\n\nThanks very much for using our Script Location Reader.')
+#     if choice == 'EMAIL':
+#         locations_emailer(script)
+#         return ('\n\nThanks very much for using our Script Location Reader.')
+#     if choice == 'DOWNLOAD':
+#         csv_creator(script)
+#         return ('\n\nThanks very much for using our Script Location Reader.')
+#     else:
+#         choice = raw_input('Please select one of "onscreen", "email", or \
+#         "download".')
+#         option_selector()
+#         return ('\n\nThanks very much for using our Script Location Reader.')
 
 
 #option_selector()
