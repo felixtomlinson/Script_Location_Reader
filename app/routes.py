@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 
 from app import app
 from app.forms import ScriptForm
-from Script_reader import locations_emailer
+from Script_reader import table_creator
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -18,7 +18,11 @@ def index():
         file_path = os.path.join(app.instance_path, 'scripts', filename)
         print(file_path)
         f.save(os.path.join(app.instance_path, 'scripts', filename))
-        locations_emailer(file_path, form.email_address.data)
+        table = table_creator(file_path).get_html_string()
         os.remove(file_path)
-        return redirect(url_for('index'))
+        return table
     return render_template('index.html', title='Home', form=form)
+
+@app.route('/locations', methods=['POST', 'GET'])
+def locations():
+    pass
