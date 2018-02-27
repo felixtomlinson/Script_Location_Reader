@@ -45,7 +45,7 @@ def split_text_returner(important_text_without_inside_or_out, end_of_inside_or_o
     as NA and the location type'''
     times_in_the_day = ['DAY', 'NIGHT', 'EVENING','DUSK', 'PRE-DAWN', 'BEFORE DAWN',
     'DAWN', 'MORNING', 'SUNSET', 'SUNRISE', 'Sundown', 'LATE AFTERNOON',
-    'AFTERNOON', 'MINUTES LATER', 'MOMENTS LATER', 'LATER', 'SAME']
+    'AFTERNOON', 'MINUTES LATER', 'MOMENTS LATER', 'LATER', 'SAME', 'CONTINUOUS']
     #There is a potential bug here.
     #If for example morning were before day and you had the string
     # 'INT. DAY. MORNING ROOM.' you'd get a truely weird result.
