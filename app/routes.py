@@ -12,11 +12,9 @@ from Script_reader import table_creator
 def index():
     form = ScriptForm()
     if form.validate_on_submit():
-        print(form.script.data)
         f = form.script.data
         filename = secure_filename(f.filename)
         file_path = os.path.join(app.instance_path, 'scripts', filename)
-        print(file_path)
         f.save(os.path.join(app.instance_path, 'scripts', filename))
         table = table_creator(file_path).get_html_string()
         os.remove(file_path)
@@ -26,3 +24,5 @@ def index():
 @app.route('/locations', methods=['POST', 'GET'])
 def locations():
     pass
+
+#Perhaps use http://flask.pocoo.org/docs/0.12/api/#flask.send_from_directory to allow a CSV to be downloaded.
