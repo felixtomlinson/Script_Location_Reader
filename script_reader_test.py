@@ -105,10 +105,3 @@ def test_add_deleted_scene_info():
 
 def test_add_normal_scene_info():
     pass
-
-
-def test_gmail_login():
-    password = open('emailpasswordsetting.txt', 'r')
-    password = password.read()
-    m = Mail('script.location.reader@gmail.com', password)
-    assert m.login()[0] == 235
