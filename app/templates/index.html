@@ -2,14 +2,37 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}
-Welcome to script location reader
+Script Location Reader
 {% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="col-md-8">
-            <h1>Hello world</h1>
+            <h1>ScriptBasher</h1>
+            <h2>About this product</h2>
+            <h3>What does it do? </h3>
+            ScriptBasher breaks down your script into an excel spreadsheet showing scenes and sets.
+            You can use the spreadsheet to work out what locations or set builds will be required.
+            <h3>Who is it for? </h3>
+            ScriptBasher is for producers and location managers or anyone who needs to work out the logistical requirements of a script.
+            <h3>How do you use it? </h3>
+            You simply upload the script, then you can view the different scenes each on a separate line.
+            If you want it as an Excel sheet, you must enter your e-mail address below, click submit, and the script breakdown will be e-mailed to you.
+            <h3>Our script is confidential - do you keep a copy?</h3>
+            No we do not. We can guarantee that the only script data retained by us is what is contained in your breakdown.
+            You get your breakdown e-mailed to you then all traces of the script itself disappear from our system.
+            With your consent we retain your name and e-mail address,
+            and we will be in touch in the future to let you know about other exciting digital products from Apply4 Technology. 
+            If you don't want to receive these e mails, click "unsubscribe"
+            <h3>This product does not work, my script breakdown is incomplete.</h3>
+            Maybe! Currently it is only a prototype, so if it doesn't work as you'd expect it please let us
+            know how we can improve it and make it work for you. <br><br>
+            Our email is info@apply4.com. We look forward to hearing from you.
+            <br> <br>
             {{ wtf.quick_form(form) }}
+            <br>
+            The product is being developed by <a href="https://apply4.com/"> Apply4 Technology</a>. <br> <br>
+            <img src="http://www.gpsj.co.uk/wp-content/uploads/2017/11/Apply4_Technology_RGB.jpg" alt="Apply4 Technology's Logo" width="200">
         </div>
     </div>
 {% endblock %}
