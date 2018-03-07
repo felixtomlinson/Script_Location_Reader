@@ -6,8 +6,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from prettytable import PrettyTable
-from Location_database import add_to_Scripts_DB
-from Location_database import add_to_LocationsInfo_DB
+from prettytable import PrettyTable
 import csv
 
 
