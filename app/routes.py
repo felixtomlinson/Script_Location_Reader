@@ -20,9 +20,10 @@ def index():
         s = Script(name=script_name)
         db.session.add(s)
         db.session.commit()
-        table = table_creator(file_path).get_html_string()
+        s_id = Script.query.order_by(Script.uploaded_at.desc()).first().id
+        table_as_html = table_creator(file_path, db, s_id).get_html_string()
         os.remove(file_path)
-        return table
+        return table_as_html
     return render_template('index.html', title='Home', form=form)
 
 

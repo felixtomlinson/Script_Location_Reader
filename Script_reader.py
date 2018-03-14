@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 from prettytable import PrettyTable
 from prettytable import PrettyTable
 import csv
+from app.models import LocationInformation
 
 
 def main():
@@ -381,7 +382,13 @@ def add_deleted_scene_info(script, lines, index, scriptname):
         return complete_line
 
 
-def table_creator(script):
+def put_info_in_database(db, line, script_id):
+    db.session.add(LocationInformation(scene_number=line[0], int_or_ext=line[1],
+                                       location_type=line[2], time_of_day=line[3],
+                                       script_id=script_id))
+
+
+def table_creator(script, db, script_id):
     # Could use a list of script numbers, plus the index to work out the missing
     # ones (as long as we assume sequentialness, there are only gaps of size 1
     # and we have an if loops that adds As and Bs)
@@ -394,12 +401,15 @@ def table_creator(script):
     index = 0
     for lines in script:
         formatted_lines = add_normal_scene_info(script, lines, index, scriptname)
-        if formatted_lines != None:
-            table.add_row(formatted_lines)
         deleted_lines = add_deleted_scene_info(script, lines, index, scriptname)
+        if formatted_lines != None:
+            put_info_in_database(db,formatted_lines,script_id)
+            table.add_row(formatted_lines)
         if deleted_lines != None:
+            put_info_in_database(db, deleted_lines, script_id)
             table.add_row(deleted_lines)
         index += 1
+    db.session.commit()
     return table
 
 
