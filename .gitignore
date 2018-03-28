@@ -116,5 +116,3 @@ venv.bak/
 
 requirements_no_venv\.txt
 
-Database_initial_connection\.py
-/config.py
