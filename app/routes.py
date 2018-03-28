@@ -1,5 +1,5 @@
 import os
-from flask import render_template, url_for, redirect
+from flask import render_template, url_for, redirect, session, Markup
 from werkzeug.utils import secure_filename
 from app.models import Script, LocationInformation
 from app import app, db
@@ -20,15 +20,20 @@ def index():
         s = Script(name=script_name)
         db.session.add(s)
         db.session.commit()
-        s_id = Script.query.order_by(Script.uploaded_at.desc()).first().id
-        table_as_html = table_creator(file_path, db, s_id).get_html_string()
-        os.remove(file_path)
-        return table_as_html
+        session['file_path'] = file_path
+        session['script_id'] = Script.query.order_by(Script.uploaded_at.desc()).first().id
+        return redirect(url_for('locations'))
     return render_template('index.html', title='Home', form=form)
 
 
 @app.route('/locations', methods=['POST', 'GET'])
 def locations():
-    pass
+    script_id = session['script_id']
+    s_id = Script.query.filter(Script.id == script_id).first()
+    s_id = s_id.id
+    file_path = session['file_path']
+    table_as_html = Markup(table_creator(file_path, db, s_id).get_html_string())
+    os.remove(file_path)
+    return render_template('locations.html', data=table_as_html, title='Locations')
 
 #Perhaps use http://flask.pocoo.org/docs/0.12/api/#flask.send_from_directory to allow a CSV to be downloaded.
