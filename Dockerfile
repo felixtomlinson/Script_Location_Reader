@@ -13,11 +13,11 @@ RUN apt-get install -y swig
 COPY requirements.txt requirements.txt
 RUN virtualenv -p python3 venv
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
-RUN . venv/bin/activate
 WORKDIR /home/script-basher
 COPY app app
 COPY migrations migrations
-COPY config.py main.py Script_reader.py ./
+COPY config.py main.py deploy.sh Script_reader.py ./
+RUN chmod +x deploy.sh
 ENV FLASK_APP main.py
 EXPOSE 5000
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["./deploy.sh"]
