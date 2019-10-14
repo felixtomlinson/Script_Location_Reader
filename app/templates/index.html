@@ -2,7 +2,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}
-Script Location Reader
+    Script Location Reader
 {% endblock %}
 
 {% block content %}
@@ -31,8 +31,10 @@ Script Location Reader
             <br> <br>
             {{ wtf.quick_form(form) }}
             <br>
-            The product is being developed by <a href="https://apply4.com/"> Apply4 Technology</a>. <br> <br>
-            <img src= {{ url_for('static', filename = 'New_Apply4_Logo.jpg') }} alt="Apply4 Technology's Logo" width="200">
+             {% include 'footer.html' %}
         </div>
     </div>
+
 {% endblock %}
+
+

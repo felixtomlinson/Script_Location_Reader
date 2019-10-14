@@ -1,30 +1,23 @@
+{% extends 'bootstrap/base.html' %}
+{% block title %}
+    Your Script Bash:
+{% endblock %}
 
-{#    <table class="table">#}
-{#        <thead>#}
-{#        <tr>#}
-{#            <th>#}
-{#                Scene number#}
-{#            </th>#}
-{#            <th>#}
-{#                Internal/External#}
-{#            </th>#}
-{#            <th>#}
-{#                Type of location#}
-{#            </th>#}
-{#            <th>#}
-{#                Time of day#}
-{#            </th>#}
-{#        </tr>#}
-{#        </thead>#}
-{#        <tbody>#}
-{#            {% for record in records %}#}
-{#        <tr>#}
-{#            <td>#}
-{#                {{ record. }}#}
-{#            </td>#}
-{#        </tr>#}
-{#        </tbody>#}
-{#    </table>#}
-    {% block content %}
-    <html>{{ data }}</html>
-    {% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div class="col-md-10">
+               <h1>Your Script Bash:</h1>
+               <br>
+               {{ data }}
+               <br>
+               <br>
+               <a class="btn btn-primary" href="index" role="button">Back to the start</a>
+               <br>
+               <br>
+
+        {% include 'footer.html' %}
+        </div>
+    </div>
+{% endblock %}
+
